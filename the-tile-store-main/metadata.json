@@ -1,0 +1,6 @@
+{
+  "name": "The Tile Store",
+  "description": "A world-class premium luxury showroom and interactive ceramic spatial visualizer for high-end tiles, architectural surfaces, and modern interior design.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
