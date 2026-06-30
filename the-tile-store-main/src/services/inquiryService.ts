@@ -252,10 +252,18 @@ export async function submitInquiry(
   }
 
   try {
-    // 1. Create the inquiry
-    const { data: inquiry, error: inquiryError } = await supabase
+    // Generate IDs client-side (matching the DB DEFAULT patterns) so we can insert
+    // without chaining .select() — a SELECT-after-INSERT triggers the SELECT RLS
+    // policy which blocks anonymous users even though the INSERT policy allows them.
+    const inquiryId = `TTS-${Math.floor(Math.random() * 0xFFFFFFFF).toString(16).toUpperCase().padStart(8, '0')}`;
+    const refNumber = `TTS-${String(Math.floor(Math.random() * 900000) + 100000)}`;
+
+    // 1. Create the inquiry — no .select() so no SELECT RLS check for anon users
+    const { error: inquiryError } = await supabase
       .from('inquiries')
       .insert({
+        id: inquiryId,
+        reference_number: refNumber,
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
@@ -264,18 +272,16 @@ export async function submitInquiry(
         message: formData.message || null,
         user_id: userId || null,
         session_id: getSessionId(),
-      })
-      .select('id, reference_number')
-      .single();
+      });
 
-    if (inquiryError || !inquiry) {
-      throw new Error(inquiryError?.message || 'Failed to create inquiry');
+    if (inquiryError) {
+      throw new Error(inquiryError.message);
     }
 
     // 2. Add all inquiry items
     if (cartItems.length > 0) {
       const inquiryItems = cartItems.map(item => ({
-        inquiry_id: inquiry.id,
+        inquiry_id: inquiryId,
         product_id: item.product.id,
         quantity: item.quantity,
         notes: item.notes || null,
@@ -294,8 +300,8 @@ export async function submitInquiry(
     try {
       await supabase.functions.invoke('submit-inquiry', {
         body: {
-          inquiryId: inquiry.id,
-          referenceNumber: inquiry.reference_number,
+          inquiryId,
+          referenceNumber: refNumber,
           ...formData,
           products: cartItems.map(item => ({
             name: item.product.name,
@@ -315,7 +321,7 @@ export async function submitInquiry(
 
     return {
       success: true,
-      referenceNumber: inquiry.reference_number,
+      referenceNumber: refNumber,
     };
   } catch (err) {
     const apiError = handleSupabaseError(err);
