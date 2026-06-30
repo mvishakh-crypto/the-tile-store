@@ -625,6 +625,7 @@ export default function App() {
             onUpdateItem={handleUpdateInquiryItem}
             onRemoveItem={handleRemoveInquiryItem}
             onClearAll={handleClearInquiryCart}
+            onSubmitInquiry={submitInquiryHook}
           />
 
           <ProductDetailModal

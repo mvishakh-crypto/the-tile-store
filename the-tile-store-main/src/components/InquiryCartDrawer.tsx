@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Trash2, Plus, Minus, Send, MessageSquare, Mail, ShoppingBag, StickyNote, ChevronDown, ChevronUp, Package } from 'lucide-react';
 import { TileProduct } from '../types';
+import type { InquiryFormData } from '../lib/validation';
 
 export interface InquiryItem {
   product: TileProduct;
@@ -17,7 +18,15 @@ interface InquiryCartDrawerProps {
   onUpdateItem: (productId: string, updates: Partial<InquiryItem>) => void;
   onRemoveItem: (productId: string) => void;
   onClearAll: () => void;
+  onSubmitInquiry: (formData: InquiryFormData) => Promise<{ success: boolean; referenceNumber?: string; error?: string }>;
 }
+
+const PROJECT_TYPE_MAP: Record<string, InquiryFormData['projectType']> = {
+  residential: 'Residential Villa',
+  commercial:  'Commercial Office',
+  hospitality: 'Hotel / Hospitality',
+  architect:   'Other',
+};
 
 export default function InquiryCartDrawer({
   isOpen,
@@ -25,7 +34,8 @@ export default function InquiryCartDrawer({
   items,
   onUpdateItem,
   onRemoveItem,
-  onClearAll
+  onClearAll,
+  onSubmitInquiry,
 }: InquiryCartDrawerProps) {
   const [expandedNotes, setExpandedNotes] = useState<string | null>(null);
   const [customerName, setCustomerName] = useState('');
@@ -34,6 +44,7 @@ export default function InquiryCartDrawer({
   const [projectType, setProjectType] = useState('residential');
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const toggleNotes = (id: string) => {
     setExpandedNotes(expandedNotes === id ? null : id);
@@ -70,13 +81,27 @@ export default function InquiryCartDrawer({
     window.open(`mailto:inquiries@thetilestore.com?subject=${subject}&body=${body}`, '_blank');
   };
 
-  const handleFormSubmit = () => {
+  const handleFormSubmit = async () => {
+    setSubmitError(null);
     setSubmitting(true);
-    setTimeout(() => {
+    try {
+      const result = await onSubmitInquiry({
+        name: customerName,
+        email: customerEmail,
+        phone: customerPhone,
+        company: '',
+        projectType: PROJECT_TYPE_MAP[projectType],
+        message: '',
+      });
+      if (result.success) {
+        setSubmitted(true);
+        setTimeout(() => setSubmitted(false), 4000);
+      } else {
+        setSubmitError(result.error || 'Submission failed. Please try again.');
+      }
+    } finally {
       setSubmitting(false);
-      setSubmitted(true);
-      setTimeout(() => setSubmitted(false), 4000);
-    }, 1500);
+    }
   };
 
   return (
@@ -305,6 +330,11 @@ export default function InquiryCartDrawer({
                     Clear All
                   </button>
                 </div>
+
+                {/* Submission error */}
+                {submitError && (
+                  <p className="px-4 pb-2 font-mono text-[10px] text-red-500 tracking-wide">{submitError}</p>
+                )}
 
                 {/* Submit Actions */}
                 <div className="px-4 pb-5 grid grid-cols-3 gap-2">
