@@ -13,7 +13,7 @@ DO $$
 DECLARE
   t TEXT;
 BEGIN
-  FOREACH t IN ARRAY ARRAY['products', 'inquiries', 'bookings', 'blogs', 'galleries']
+  FOREACH t IN ARRAY ARRAY['products', 'inquiries', 'inquiry_items', 'bookings', 'blogs', 'galleries']
   LOOP
     IF NOT EXISTS (
       SELECT 1 FROM pg_publication_tables
@@ -28,8 +28,9 @@ END $$;
 
 -- Set REPLICA IDENTITY FULL so realtime payloads include old row values
 -- (running this multiple times is harmless)
-ALTER TABLE public.products  REPLICA IDENTITY FULL;
-ALTER TABLE public.inquiries REPLICA IDENTITY FULL;
-ALTER TABLE public.bookings  REPLICA IDENTITY FULL;
-ALTER TABLE public.blogs     REPLICA IDENTITY FULL;
-ALTER TABLE public.galleries REPLICA IDENTITY FULL;
+ALTER TABLE public.products       REPLICA IDENTITY FULL;
+ALTER TABLE public.inquiries      REPLICA IDENTITY FULL;
+ALTER TABLE public.inquiry_items  REPLICA IDENTITY FULL;
+ALTER TABLE public.bookings       REPLICA IDENTITY FULL;
+ALTER TABLE public.blogs          REPLICA IDENTITY FULL;
+ALTER TABLE public.galleries      REPLICA IDENTITY FULL;

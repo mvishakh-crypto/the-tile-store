@@ -5,6 +5,7 @@ import StatusBadge from '../components/StatusBadge';
 import AdminFormField from '../components/AdminFormField';
 import { adminGetInquiries, adminUpdateInquiryStatus, adminGetArchitectApplications, adminApprovePartner } from '../../services/adminService';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 import { MessageSquare, Calendar, X, Eye, Phone, Mail, Building, Check, Ban, AlertCircle } from 'lucide-react';
 import { queryClient } from '../../lib/queryClient';
 
@@ -68,14 +69,23 @@ export default function InquiriesPage() {
     fetchInquiries();
 
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'tts-local-inquiries') {
-        fetchInquiries();
-      }
+      if (e.key === 'tts-local-inquiries') fetchInquiries();
     };
     window.addEventListener('storage', handleStorageChange);
 
+    let channel: RealtimeChannel | null = null;
+    if (isSupabaseConfigured) {
+      channel = supabase
+        .channel('admin-inquiries-rt')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'inquiries' }, () => {
+          fetchInquiries();
+        })
+        .subscribe();
+    }
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      if (channel) supabase.removeChannel(channel);
     };
   }, [activeTab, page]);
 

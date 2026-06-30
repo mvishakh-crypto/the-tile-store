@@ -4,6 +4,8 @@ import DataTable from '../components/DataTable';
 import StatusBadge from '../components/StatusBadge';
 import AdminFormField from '../components/AdminFormField';
 import { adminGetBookings, adminUpdateBookingStatus } from '../../services/adminService';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 import { Mail, Phone, Calendar, Clock, Landmark, AlertCircle, X } from 'lucide-react';
 import { queryClient } from '../../lib/queryClient';
 
@@ -35,14 +37,23 @@ export default function BookingsPage() {
     fetchBookings();
 
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'tts-local-bookings') {
-        fetchBookings();
-      }
+      if (e.key === 'tts-local-bookings') fetchBookings();
     };
     window.addEventListener('storage', handleStorageChange);
 
+    let channel: RealtimeChannel | null = null;
+    if (isSupabaseConfigured) {
+      channel = supabase
+        .channel('admin-bookings-rt')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, () => {
+          fetchBookings();
+        })
+        .subscribe();
+    }
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      if (channel) supabase.removeChannel(channel);
     };
   }, [page]);
 
