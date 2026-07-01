@@ -74,9 +74,14 @@ export async function createBooking(
   }
 
   try {
-    const { data, error } = await supabase
+    // Generate UUID client-side to avoid SELECT-after-INSERT triggering SELECT RLS
+    // for anonymous users (same pattern as inquiryService).
+    const bookingId = crypto.randomUUID();
+
+    const { error } = await supabase
       .from('bookings')
       .insert({
+        id: bookingId,
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
@@ -88,24 +93,22 @@ export async function createBooking(
         notes: formData.notes || null,
         user_id: userId || null,
         status: 'pending',
-      })
-      .select('id')
-      .single();
+      });
 
-    if (error || !data) {
-      throw new Error(error?.message || 'Failed to create booking');
+    if (error) {
+      throw new Error(error.message);
     }
 
     // Optionally trigger email confirmation via Edge Function
     try {
       await supabase.functions.invoke('send-booking-confirmation', {
-        body: { bookingId: data.id, ...formData },
+        body: { bookingId, ...formData },
       });
     } catch {
       // Non-critical: email failure doesn't fail the booking
     }
 
-    return { success: true, bookingId: data.id };
+    return { success: true, bookingId };
   } catch (err) {
     const apiError = handleSupabaseError(err);
     return { success: false, error: apiError.message };

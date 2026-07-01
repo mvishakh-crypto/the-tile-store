@@ -61,16 +61,7 @@ export const bookingSchema = z.object({
   phone: phoneSchema,
   date: z.string().min(1, 'Please select a date'),
   time: z.string().min(1, 'Please select a time slot'),
-  projectType: z
-    .enum([
-      'Home Interior',
-      'Commercial Project',
-      'Architect / Designer',
-      'Builder / Developer',
-      'Sample Request',
-      'Other',
-    ])
-    .optional(),
+  projectType: z.string().max(100).optional().or(z.literal('')),
   location: z.string().max(200).optional().or(z.literal('')),
   budgetRange: z
     .enum([
