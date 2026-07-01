@@ -297,6 +297,15 @@ export default function App() {
     window.location.hash = hash;
   };
 
+  const handleOpenBooking = () => {
+    // Always scroll directly — hashchange won't fire if hash is already #/booking
+    const isOnHome = currentPage === 'home';
+    window.location.hash = '#/booking';
+    setTimeout(() => {
+      document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, isOnHome ? 50 : 300);
+  };
+
   const handleSelectTileForVisualizer = (tile: TileProduct) => {
     setSelectedTileForVisualizer(tile);
   };
@@ -422,7 +431,7 @@ export default function App() {
               currentPage === 'product-detail' ? 'collections' : 'home'
             }
             onNavigate={handleNavigate}
-            onOpenBooking={() => handleNavigate('#/booking')}
+            onOpenBooking={handleOpenBooking}
             onOpenSearch={() => setIsSearchOpen(true)}
             onOpenWishlist={() => setIsWishlistOpen(true)}
             onOpenBlog={() => handleNavigate('#/blog')}
@@ -438,14 +447,14 @@ export default function App() {
               <>
                 {/* 2. Hero fullscreen section */}
                 <Hero 
-                  onExploreClick={() => handleNavigate('#/collections')} 
-                  onBookingClick={() => handleNavigate('#/booking')}
+                  onExploreClick={() => handleNavigate('#/collections')}
+                  onBookingClick={handleOpenBooking}
                 />
 
                 {/* 3. Interactive Slabs and Tile Collections */}
                 <TileCollections 
                   onSelectTileForVisualizer={handleSelectTileForVisualizer} 
-                  onOpenBooking={() => handleNavigate('#/booking')}
+                  onOpenBooking={handleOpenBooking}
                   externalSelectedTile={externalSelectedTile}
                   onClearExternalSelectedTile={() => setExternalSelectedTile(null)}
                   wishlist={wishlist}
@@ -491,7 +500,7 @@ export default function App() {
                 <TileCollections 
                   isFullscreen={true}
                   onSelectTileForVisualizer={handleSelectTileForVisualizer} 
-                  onOpenBooking={() => handleNavigate('#/booking')}
+                  onOpenBooking={handleOpenBooking}
                   externalSelectedTile={externalSelectedTile}
                   onClearExternalSelectedTile={() => setExternalSelectedTile(null)}
                   wishlist={wishlist}
@@ -539,7 +548,7 @@ export default function App() {
 
           {/* 11. Refined design footer (omitted on dedicated calculator page since that has its own) */}
           {currentPage !== 'calculator' && (
-            <Footer onNavigate={handleNavigate} />
+            <Footer onNavigate={(id) => id === 'booking' ? handleOpenBooking() : handleNavigate(`#/${id}`)} />
           )}
 
           {/* Global Floating Search Portal Overlay */}
