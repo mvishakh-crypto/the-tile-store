@@ -174,12 +174,16 @@ export default function App() {
         const id = hash.replace('#/product/', '');
         setCurrentProductId(id);
         setCurrentPage('product-detail');
+        window.scrollTo(0, 0);
       } else if (hash === '#/partners') {
         setCurrentPage('partners');
+        window.scrollTo(0, 0);
       } else if (hash === '#/calculator') {
         setCurrentPage('calculator');
+        window.scrollTo(0, 0);
       } else if (hash === '#/collections') {
         setCurrentPage('collections');
+        window.scrollTo(0, 0);
       } else {
         setCurrentPage('home');
         const sectionMapping: Record<string, string> = {
