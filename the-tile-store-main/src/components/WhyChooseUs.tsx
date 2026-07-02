@@ -1,63 +1,99 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
-import { Sparkles, Landmark, Layers, Layout, Clock, Award, Hammer, BookOpen } from 'lucide-react';
+import { Landmark, Layers, Layout, Clock, Award, Hammer, BookOpen } from 'lucide-react';
 
-interface MetricItem {
-  id: string;
-  target: number;
-  suffix: string;
-  label: string;
-  subtitle: string;
-  icon: React.ReactNode;
-}
+// Static data outside component so the useEffect can reference it without stale-closure issues
+const STATS_DATA = [
+  {
+    id: 'm1',
+    target: 4000,
+    suffix: '+',
+    label: 'Exquisite Tile Designs',
+    subtitle: 'From hand-finished local terracotta to colossal high-load architectural porcelain.',
+  },
+  {
+    id: 'm2',
+    target: 15000,
+    suffix: ' Sqft',
+    label: 'Majestic Physical Showroom',
+    subtitle: 'Curated galleries and bespoke mockups to explore surfaces under natural sky light.',
+  },
+  {
+    id: 'm3',
+    target: 500000,
+    suffix: '+ Sqft',
+    label: 'Ready Slabs in Stock',
+    subtitle: 'Massive local inventory ensuring instant project logistics and zero structural delays.',
+  },
+  {
+    id: 'm4',
+    target: 100,
+    suffix: '+',
+    label: 'Live Showroom Mockups',
+    subtitle: 'Full-scale physical living room and bath concepts configured for direct feedback.',
+  },
+];
 
 export default function WhyChooseUs() {
-  const stats: MetricItem[] = [
-    {
-      id: 'm1',
-      target: 4000,
-      suffix: '+',
-      label: 'Exquisite Tile Designs',
-      subtitle: 'From hand-finished local terracotta to colossal high-load architectural porcelain.',
-      icon: <Layers className="w-5 h-5 text-gold-500" />
-    },
-    {
-      id: 'm2',
-      target: 15000,
-      suffix: ' Sqft',
-      label: 'Majestic Physical Showroom',
-      subtitle: 'Curated galleries and bespoke mockups to explore surfaces under natural sky light.',
-      icon: <Landmark className="w-5 h-5 text-gold-500" />
-    },
-    {
-      id: 'm3',
-      target: 500000,
-      suffix: '+ Sqft',
-      label: 'Ready Slabs in Stock',
-      subtitle: 'Massive local inventory ensuring instant project logistics and zero structural delays.',
-      icon: <Award className="w-5 h-5 text-gold-500" />
-    },
-    {
-      id: 'm4',
-      target: 100,
-      suffix: '+',
-      label: 'Live Showroom Mockups',
-      subtitle: 'Full-scale physical living room and bath concepts configured for direct feedback.',
-      icon: <Layout className="w-5 h-5 text-gold-500" />
-    }
-  ];
+  const icons: Record<string, React.ReactNode> = {
+    m1: <Layers className="w-5 h-5 text-gold-500" />,
+    m2: <Landmark className="w-5 h-5 text-gold-500" />,
+    m3: <Award className="w-5 h-5 text-gold-500" />,
+    m4: <Layout className="w-5 h-5 text-gold-500" />,
+  };
+
+  // Displayed count for each stat, starts at 0
+  const [counts, setCounts] = useState<Record<string, number>>(
+    () => Object.fromEntries(STATS_DATA.map(s => [s.id, 0]))
+  );
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0].isIntersecting || hasAnimated) return;
+        setHasAnimated(true);
+
+        STATS_DATA.forEach(({ id, target }, statIdx) => {
+          // Stagger each card's counter start by 120ms
+          setTimeout(() => {
+            const DURATION = 1800; // total ms for the count-up
+            const start = performance.now();
+
+            const tick = (now: number) => {
+              const elapsed = now - start;
+              const progress = Math.min(elapsed / DURATION, 1);
+              // Cubic ease-out: fast at first, decelerates to final value
+              const eased = 1 - Math.pow(1 - progress, 3);
+              const value = progress < 1 ? Math.floor(eased * target) : target;
+              setCounts(prev => ({ ...prev, [id]: value }));
+              if (progress < 1) requestAnimationFrame(tick);
+            };
+
+            requestAnimationFrame(tick);
+          }, statIdx * 120);
+        });
+      },
+      { threshold: 0.25 }
+    );
+
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, [hasAnimated]);
 
   return (
-    <section 
-      className="py-24 bg-charcoal text-warmwhite relative overflow-hidden" 
+    <section
+      ref={sectionRef}
+      className="py-24 bg-charcoal text-warmwhite relative overflow-hidden"
       id="why-choose-us"
     >
       {/* Absolute Backdrop Details */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-gold-500/5 blur-3xl rounded-full pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-gold-400/5 blur-3xl rounded-full pointer-events-none" />
-      
+
       <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
-        
+
         {/* Header Block */}
         <div className="max-w-3xl mb-16" id="why-choose-us-heading">
           <div className="flex items-center gap-2 mb-3">
@@ -66,11 +102,11 @@ export default function WhyChooseUs() {
             </span>
             <span className="h-[1px] w-8 bg-gold-400/50"></span>
           </div>
-          
+
           <h2 className="font-serif text-3xl md:text-5xl font-bold tracking-tight mb-4">
             Showroom Capacity & Precision
           </h2>
-          
+
           <p className="font-sans text-xs sm:text-sm text-gray-300 leading-relaxed max-w-xl">
             We operate at scale. We serve premium architects and custom homebuilders with immediate logistics capacity, exquisite customer custom-sizing support, and global sourcing lines.
           </p>
@@ -78,7 +114,7 @@ export default function WhyChooseUs() {
 
         {/* Stats Grid Layout styled as luxurious Bento cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="stats-bento-grid">
-          {stats.map((stat, idx) => (
+          {STATS_DATA.map((stat, idx) => (
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -91,15 +127,15 @@ export default function WhyChooseUs() {
             >
               {/* Abs hover trace outline */}
               <div className="absolute top-0 left-0 w-[2px] h-0 bg-gold-500 group-hover:h-full transition-all duration-500" />
-              
+
               <div id={`stat-header-${stat.id}`}>
                 <div className="mb-6 p-2 w-max border border-white/10 rounded-full group-hover:border-gold-500/50 group-hover:bg-gold-500/10 transition-colors duration-300">
-                  {stat.icon}
+                  {icons[stat.id]}
                 </div>
-                
-                {/* Simulated count animation */}
-                <div className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-warmwhite tracking-tight mb-2 flex items-baseline">
-                  <span>{stat.target.toLocaleString()}</span>
+
+                {/* Count-up number display */}
+                <div className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-warmwhite tracking-tight mb-2 flex items-baseline tabular-nums">
+                  <span>{counts[stat.id].toLocaleString()}</span>
                   <span className="text-gold-400 text-2xl ml-0.5">{stat.suffix}</span>
                 </div>
               </div>
