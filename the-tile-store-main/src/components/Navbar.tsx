@@ -8,7 +8,6 @@ interface NavbarProps {
   onOpenBooking: () => void;
   onOpenSearch: () => void;
   onOpenWishlist: () => void;
-  onOpenBlog: () => void;
   onOpenPartnership: () => void;
   onOpenInquiryCart: () => void;
   wishlistCount: number;
@@ -21,7 +20,6 @@ export default function Navbar({
   onOpenBooking, 
   onOpenSearch,
   onOpenWishlist,
-  onOpenBlog,
   onOpenPartnership,
   onOpenInquiryCart,
   wishlistCount,
@@ -45,7 +43,6 @@ export default function Navbar({
     { label: 'Calculator', hash: '#/calculator' },
     { label: 'Brands', hash: '#/brands' },
     { label: 'Projects', hash: '#/projects' },
-    { label: 'Editorial', hash: '#/blog' },
     { label: 'Partners', hash: '#/partners' }
   ];
 
@@ -59,8 +56,7 @@ export default function Navbar({
       'calculator-section': '#/calculator',
       'brands': '#/brands',
       'projects': '#/projects',
-      'blog': '#/blog',
-      'partners': '#/partners'
+'partners': '#/partners'
     };
     return hashMapping[activeSection] === itemHash;
   };

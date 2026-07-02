@@ -19,7 +19,6 @@ import { applySEO, SEO_CONFIGS } from './lib/seo';
 import WishlistDrawer from './components/WishlistDrawer';
 import MoodboardCanvas from './components/MoodboardCanvas';
 import CompareModal from './components/CompareModal';
-import BlogCMS from './components/BlogCMS';
 import PartnershipModal from './components/PartnershipModal';
 import InquiryCartDrawer, { InquiryItem } from './components/InquiryCartDrawer';
 import InstagramFeed from './components/InstagramFeed';
@@ -27,7 +26,6 @@ import ProductDetailModal from './components/ProductDetailModal';
 import CalculatorPage from './pages/CalculatorPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import PartnersPage from './pages/PartnersPage';
-import BlogPage from './pages/BlogPage';
 import { useWishlist } from './hooks/useWishlist';
 import { useInquiryCart } from './hooks/useInquiryCart';
 import { useSupabaseAuth } from './hooks/useSupabaseAuth';
@@ -48,13 +46,12 @@ import './admin/admin.css';
 export default function App() {
   useRealtimeSync();
 
-  const [currentPage, setCurrentPage] = useState<'home' | 'collections' | 'calculator' | 'product-detail' | 'partners' | 'blog' | 'admin'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'collections' | 'calculator' | 'product-detail' | 'partners' | 'admin'>('home');
   const [activeSection, setActiveSection] = useState<string>('home');
   const [selectedTileForVisualizer, setSelectedTileForVisualizer] = useState<TileProduct | null>(null);
 
   const [currentHash, setCurrentHash] = useState<string>(() => window.location.hash || '#/');
   const [currentProductId, setCurrentProductId] = useState<string>('');
-  const [currentArticleId, setCurrentArticleId] = useState<string | null>(null);
 
   // Global search open & external tile selection state
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
@@ -89,7 +86,6 @@ export default function App() {
   const [isCompareOpen, setIsCompareOpen] = useState<boolean>(false);
   const [isCalculatorOpen, setIsCalculatorOpen] = useState<boolean>(false);
   const [calculatorTile, setCalculatorTile] = useState<TileProduct | null>(null);
-  const [isBlogOpen, setIsBlogOpen] = useState<boolean>(false);
   const [isPartnershipOpen, setIsPartnershipOpen] = useState<boolean>(false);
 
   // DB-backed inquiry cart (localStorage + Supabase, graceful degradation)
@@ -181,13 +177,6 @@ export default function App() {
         const id = hash.replace('#/product/', '');
         setCurrentProductId(id);
         setCurrentPage('product-detail');
-      } else if (hash.startsWith('#/blog/read/')) {
-        const id = hash.replace('#/blog/read/', '');
-        setCurrentArticleId(id);
-        setCurrentPage('blog');
-      } else if (hash === '#/blog') {
-        setCurrentArticleId(null);
-        setCurrentPage('blog');
       } else if (hash === '#/partners') {
         setCurrentPage('partners');
       } else if (hash === '#/calculator') {
@@ -248,10 +237,6 @@ export default function App() {
           trackProductView(id, 'direct');
         }
       });
-    } else if (currentHash.startsWith('#/blog/read/')) {
-      // Blog post SEO handled within BlogPage
-    } else if (currentHash === '#/blog') {
-      applySEO(SEO_CONFIGS.blog());
     } else if (currentHash === '#/partners') {
       applySEO(SEO_CONFIGS.partners());
     } else if (currentHash === '#/calculator') {
@@ -425,7 +410,6 @@ export default function App() {
             activeSection={
               currentPage === 'home' ? activeSection :
               currentPage === 'collections' ? 'collections' :
-              currentPage === 'blog' ? 'blog' :
               currentPage === 'partners' ? 'partners' :
               currentPage === 'calculator' ? 'calculator-section' :
               currentPage === 'product-detail' ? 'collections' : 'home'
@@ -434,7 +418,6 @@ export default function App() {
             onOpenBooking={handleOpenBooking}
             onOpenSearch={() => setIsSearchOpen(true)}
             onOpenWishlist={() => setIsWishlistOpen(true)}
-            onOpenBlog={() => handleNavigate('#/blog')}
             onOpenPartnership={() => handleNavigate('#/partners')}
             onOpenInquiryCart={() => setIsInquiryCartOpen(true)}
             wishlistCount={wishlist.length}
@@ -541,9 +524,6 @@ export default function App() {
               <PartnersPage onNavigate={handleNavigate} />
             )}
 
-            {currentPage === 'blog' && (
-              <BlogPage currentArticleId={currentArticleId} onNavigate={handleNavigate} />
-            )}
           </main>
 
           {/* 11. Refined design footer (omitted on dedicated calculator page since that has its own) */}
@@ -615,11 +595,6 @@ export default function App() {
             comparedProducts={comparedProducts}
             onRemoveFromCompare={handleRemoveFromCompare}
             onSelectTileForVisualizer={handleSelectTileForVisualizer}
-          />
-
-          <BlogCMS
-            isOpen={isBlogOpen}
-            onClose={() => setIsBlogOpen(false)}
           />
 
           <PartnershipModal

@@ -4,7 +4,7 @@
 import { useState, ReactNode } from 'react';
 import {
   LayoutDashboard, Package, Grid3X3, Boxes, MessageSquare, CalendarDays,
-  FileText, Image, Brain, BarChart3, Settings, LogOut, ChevronRight,
+  Image, Brain, BarChart3, Settings, LogOut, ChevronRight,
   Layers, Store, ExternalLink
 } from 'lucide-react';
 import { signOut } from '../../hooks/useSupabaseAuth';
@@ -43,7 +43,6 @@ const NAV_SECTIONS: { label: string; items: AdminRoute[] }[] = [
   {
     label: 'Content',
     items: [
-      { id: 'blog', label: 'Blog CMS', hash: '#/admin/blog', icon: <FileText size={15} /> },
       { id: 'gallery', label: 'Gallery & Inspirations', hash: '#/admin/gallery', icon: <Image size={15} /> },
     ],
   },

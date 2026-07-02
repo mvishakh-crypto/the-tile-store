@@ -12,7 +12,6 @@ import CategoriesPage from './pages/CategoriesPage';
 import InventoryPage from './pages/InventoryPage';
 import InquiriesPage from './pages/InquiriesPage';
 import BookingsPage from './pages/BookingsPage';
-import BlogPage from './pages/BlogPage';
 import GalleryPage from './pages/GalleryPage';
 import AIPage from './pages/AIPage';
 import AnalyticsPage from './pages/AnalyticsPage';
@@ -134,8 +133,6 @@ export default function AdminApp() {
         return <InquiriesPage />;
       case 'bookings':
         return <BookingsPage />;
-      case 'blog':
-        return <BlogPage />;
       case 'gallery':
         return <GalleryPage />;
       case 'ai':
