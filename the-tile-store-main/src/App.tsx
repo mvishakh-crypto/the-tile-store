@@ -439,8 +439,8 @@ export default function App() {
                 />
 
                 {/* 3. Interactive Slabs and Tile Collections */}
-                <TileCollections 
-                  onSelectTileForVisualizer={handleSelectTileForVisualizer} 
+                <TileCollections
+                  onSelectTileForVisualizer={handleSelectTileForVisualizer}
                   onOpenBooking={handleOpenBooking}
                   externalSelectedTile={externalSelectedTile}
                   onClearExternalSelectedTile={() => setExternalSelectedTile(null)}
@@ -454,6 +454,7 @@ export default function App() {
                   onOpenCompareModal={() => setIsCompareOpen(true)}
                   onAddToInquiry={handleAddToInquiry}
                   onOpenProductDetail={handleOpenProductDetail}
+                  onNavigate={handleNavigate}
                 />
 
                 {/* 4. Real-Time Spatial Room Visualizer */}
