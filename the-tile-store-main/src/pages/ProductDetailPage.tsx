@@ -520,7 +520,7 @@ export default function ProductDetailPage({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedProducts.map(tile => (
+            {(relatedProducts ?? []).map(tile => (
               <div
                 key={tile.id}
                 onClick={() => onNavigate(`#/product/${tile.id}`)}
