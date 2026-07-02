@@ -30,6 +30,7 @@ import { useInquiryCart } from './hooks/useInquiryCart';
 import { useSupabaseAuth } from './hooks/useSupabaseAuth';
 import { useCompare } from './hooks/useCompare';
 import { useRecentlyViewed } from './hooks/useRecentlyViewed';
+import { useDarkMode } from './hooks/useDarkMode';
 import { getProductById } from './services/productService';
 import { useRealtimeSync } from './hooks/useRealtimeSync';
 import {
@@ -44,6 +45,7 @@ import './admin/admin.css';
 
 export default function App() {
   useRealtimeSync();
+  const { isDark, toggle: toggleDarkMode } = useDarkMode();
 
   const [currentPage, setCurrentPage] = useState<'home' | 'collections' | 'calculator' | 'product-detail' | 'partners' | 'admin'>('home');
   const [activeSection, setActiveSection] = useState<string>('home');
@@ -422,6 +424,8 @@ export default function App() {
             onOpenInquiryCart={() => setIsInquiryCartOpen(true)}
             wishlistCount={wishlist.length}
             inquiryCartCount={inquiryCart.length}
+            isDarkMode={isDark}
+            onToggleDarkMode={toggleDarkMode}
           />
 
           {/* Dynamic Page Router Switcher */}

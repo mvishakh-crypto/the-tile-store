@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, ArrowRight, ShieldCheck, Search, Heart, BookOpen, Briefcase, ShoppingBag } from 'lucide-react';
+import { Menu, X, ArrowRight, ShieldCheck, Search, Heart, BookOpen, Briefcase, ShoppingBag, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface NavbarProps {
@@ -12,18 +12,22 @@ interface NavbarProps {
   onOpenInquiryCart: () => void;
   wishlistCount: number;
   inquiryCartCount: number;
+  isDarkMode: boolean;
+  onToggleDarkMode: () => void;
 }
 
-export default function Navbar({ 
-  activeSection, 
-  onNavigate, 
-  onOpenBooking, 
+export default function Navbar({
+  activeSection,
+  onNavigate,
+  onOpenBooking,
   onOpenSearch,
   onOpenWishlist,
   onOpenPartnership,
   onOpenInquiryCart,
   wishlistCount,
-  inquiryCartCount
+  inquiryCartCount,
+  isDarkMode,
+  onToggleDarkMode
 }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -179,6 +183,20 @@ export default function Navbar({
               )}
             </button>
 
+            {/* Dark / Light mode toggle */}
+            <button
+              onClick={onToggleDarkMode}
+              className="flex items-center gap-2 px-3 py-2 bg-charcoal/5 border border-charcoal/5 hover:border-gold-500 hover:bg-gold-50 transition-all duration-300 rounded-none cursor-pointer text-charcoal group"
+              title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              aria-label="Toggle dark mode"
+              id="navbar-theme-toggle"
+            >
+              {isDarkMode
+                ? <Sun className="w-4 h-4 text-charcoal/70 group-hover:text-gold-600 transition-colors" />
+                : <Moon className="w-4 h-4 text-charcoal/70 group-hover:text-gold-600 transition-colors" />
+              }
+            </button>
+
             <button
               onClick={onOpenBooking}
               className="hidden sm:flex items-center gap-2 px-6 py-2 border border-charcoal text-charcoal hover:bg-charcoal hover:text-warmwhite rounded-none text-[10px] font-sans font-semibold tracking-widest uppercase transition-all duration-300 cursor-pointer"
@@ -313,6 +331,16 @@ export default function Navbar({
               >
                 Inquire & Book Private Tour
               </button>
+
+              {/* Dark mode toggle for mobile */}
+              <button
+                onClick={onToggleDarkMode}
+                className="w-full flex items-center justify-center gap-2 py-3 border border-charcoal/10 text-charcoal/60 hover:text-gold-600 hover:border-gold-500 font-mono text-[10px] tracking-widest uppercase transition-all duration-300 cursor-pointer"
+              >
+                {isDarkMode ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+                {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+              </button>
+
               <div className="flex items-center justify-center gap-2 mt-2">
                 <ShieldCheck className="w-4 h-4 text-gold-500" />
                 <span className="font-mono text-[10px] text-charcoal/50 uppercase tracking-widest">
