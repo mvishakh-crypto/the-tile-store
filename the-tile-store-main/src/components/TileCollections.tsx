@@ -2,7 +2,7 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { useProducts, useCategories } from '../hooks/useProducts';
 import { TileProduct } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import { Eye, Shield, Ruler, MapPin, Layers, X, ClipboardCheck, ArrowRight, BookOpen, ChevronLeft, ChevronRight, Filter, Heart, Scale, Calculator, ShoppingBag, Info } from 'lucide-react';
+import { Eye, Shield, Ruler, MapPin, Layers, X, ClipboardCheck, ArrowRight, BookOpen, ChevronLeft, ChevronRight, Filter, Heart, Scale, Calculator, ShoppingBag, Info, Search, LayoutGrid } from 'lucide-react';
 import ProgressiveImage from './ProgressiveImage';
 import AdvancedFilterDrawer from './AdvancedFilterDrawer';
 
@@ -68,6 +68,9 @@ export default function TileCollections({
   // Sorting state
   const [sortBy, setSortBy] = useState<string>('recommended');
 
+  // Search query (fullscreen only)
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = isFullscreen ? 8 : 12;
@@ -79,7 +82,7 @@ export default function TileCollections({
     setIsGridLoading(true);
     const timer = setTimeout(() => setIsGridLoading(false), 350);
     return () => clearTimeout(timer);
-  }, [activeCategory, selectedFilters, sortBy, currentPage]);
+  }, [activeCategory, selectedFilters, sortBy, searchQuery, currentPage]);
 
   // Recently Viewed state
   const [recentlyViewed, setRecentlyViewed] = useState<TileProduct[]>(() => {
@@ -97,7 +100,7 @@ export default function TileCollections({
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeCategory, selectedFilters, sortBy]);
+  }, [activeCategory, selectedFilters, sortBy, searchQuery]);
 
   // Synchronize with search selection — navigate directly to product page
   useEffect(() => {
@@ -216,6 +219,20 @@ export default function TileCollections({
       });
     }
 
+    // Search query filter (name, color, size, material, finish, category)
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      products = products.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        (p.color && p.color.toLowerCase().includes(q)) ||
+        (p.size && p.size.toLowerCase().includes(q)) ||
+        (p.priceCategory && p.priceCategory.toLowerCase().includes(q)) ||
+        (p.material && p.material.toLowerCase().includes(q)) ||
+        (p.finish && p.finish.toLowerCase().includes(q)) ||
+        (p.category && p.category.toLowerCase().includes(q))
+      );
+    }
+
     // Sorting
     if (sortBy === 'name') {
       products.sort((a, b) => a.name.localeCompare(b.name));
@@ -232,7 +249,7 @@ export default function TileCollections({
     }
 
     return products;
-  }, [productsData, activeCategory, selectedFilters, sortBy]);
+  }, [productsData, activeCategory, selectedFilters, sortBy, searchQuery]);
 
   const paginatedProducts = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
@@ -255,6 +272,7 @@ export default function TileCollections({
       textures: [],
       materials: []
     });
+    setSearchQuery('');
   };
 
   // Helper check for Wishlist/Compare inclusion
@@ -499,6 +517,27 @@ export default function TileCollections({
             
             {/* Right main grid area */}
             <div className="lg:col-span-3">
+              {/* Search bar */}
+              <div className="relative mb-4">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-charcoal/40 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Search by name, color, size, material, finish..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-10 py-3 bg-white border border-charcoal/10 focus:border-gold-500 outline-none font-sans text-xs tracking-wide text-charcoal placeholder:text-charcoal/30 transition-colors duration-200"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-charcoal/40 hover:text-charcoal transition-colors cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+
               <div className="flex flex-col sm:flex-row items-center justify-between pb-6 mb-6 border-b border-charcoal/5 gap-4">
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                   <span className="font-mono text-[10px] text-charcoal/40 uppercase">Category:</span>
@@ -546,18 +585,28 @@ export default function TileCollections({
           <>
             {/* Standard non-fullscreen controls row */}
             <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 mb-16 px-6">
-              <button
-                onClick={() => setIsFilterDrawerOpen(true)}
-                className="flex items-center gap-2 px-5 py-2.5 bg-white border border-charcoal/10 hover:border-gold-500 hover:bg-gold-50 text-charcoal text-xs font-semibold tracking-widest uppercase transition-all duration-300 w-full sm:w-auto justify-center cursor-pointer"
-              >
-                <Filter className="w-4 h-4 text-gold-600" />
-                Advanced Filters
-                {activeFilterCount > 0 && (
-                  <span className="ml-1.5 h-5 w-5 bg-gold-500 text-charcoal rounded-full flex items-center justify-center text-[10px] font-bold">
-                    {activeFilterCount}
-                  </span>
-                )}
-              </button>
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <button
+                  onClick={() => setIsFilterDrawerOpen(true)}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-white border border-charcoal/10 hover:border-gold-500 hover:bg-gold-50 text-charcoal text-xs font-semibold tracking-widest uppercase transition-all duration-300 justify-center cursor-pointer"
+                >
+                  <Filter className="w-4 h-4 text-gold-600" />
+                  Advanced Filters
+                  {activeFilterCount > 0 && (
+                    <span className="ml-1.5 h-5 w-5 bg-gold-500 text-charcoal rounded-full flex items-center justify-center text-[10px] font-bold">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => onNavigate?.('#/collections')}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-charcoal border border-charcoal text-warmwhite hover:bg-gold-500 hover:border-gold-500 hover:text-charcoal text-xs font-semibold tracking-widest uppercase transition-all duration-300 justify-center cursor-pointer"
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                  All Collections
+                </button>
+              </div>
 
               <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
                 <span className="font-mono text-[10px] tracking-widest text-charcoal/40 uppercase">Sort By:</span>
