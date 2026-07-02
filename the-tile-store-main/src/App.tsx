@@ -22,7 +22,6 @@ import CompareModal from './components/CompareModal';
 import PartnershipModal from './components/PartnershipModal';
 import InquiryCartDrawer, { InquiryItem } from './components/InquiryCartDrawer';
 import InstagramFeed from './components/InstagramFeed';
-import ProductDetailModal from './components/ProductDetailModal';
 import CalculatorPage from './pages/CalculatorPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import PartnersPage from './pages/PartnersPage';
@@ -109,8 +108,6 @@ export default function App() {
 
 
   // Product Detail Modal State
-  const [productDetailTile, setProductDetailTile] = useState<TileProduct | null>(null);
-  const [isProductDetailOpen, setIsProductDetailOpen] = useState<boolean>(false);
 
   // Global keyboard shortcut listener for search overlay (Press '/' or 'CMD+K')
   useEffect(() => {
@@ -341,12 +338,11 @@ export default function App() {
     clearInquiryCart();
   };
 
-  // Product Detail Modal Handler — with analytics + recently viewed
+  // Navigate to product detail page — with analytics + recently viewed
   const handleOpenProductDetail = (tile: TileProduct) => {
-    setProductDetailTile(tile);
-    setIsProductDetailOpen(true);
-    trackProductView(tile.id, 'catalog');  // ← Analytics
-    addToRecent(tile);                      // ← Recently viewed
+    trackProductView(tile.id, 'catalog');
+    addToRecent(tile);
+    handleNavigate(`#/product/${tile.id}`);
   };
 
   if (currentPage === 'admin') {
@@ -610,14 +606,6 @@ export default function App() {
             onRemoveItem={handleRemoveInquiryItem}
             onClearAll={handleClearInquiryCart}
             onSubmitInquiry={submitInquiryHook}
-          />
-
-          <ProductDetailModal
-            isOpen={isProductDetailOpen}
-            onClose={() => setIsProductDetailOpen(false)}
-            product={productDetailTile}
-            onAddToInquiry={handleAddToInquiry}
-            onAddToWishlist={handleAddToWishlist}
           />
 
         </div>
