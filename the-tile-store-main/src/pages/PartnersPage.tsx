@@ -180,7 +180,7 @@ export default function PartnersPage({ onNavigate }: PartnersPageProps) {
           <div className="lg:col-span-6 bg-white border border-charcoal/8 shadow-sm p-6 sm:p-8 relative">
             <div className="flex items-center gap-2 mb-6 pb-4 border-b border-charcoal/5">
               <Briefcase className="w-4 h-4 text-gold-600" />
-              <span className="font-serif text-base font-bold text-charcoal tracking-wide uppercase">Partner Registration</span>
+              <span className="font-serif text-base font-bold text-charcoal tracking-wide uppercase">Loyalty Program</span>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -308,7 +308,7 @@ export default function PartnersPage({ onNavigate }: PartnersPageProps) {
                 ) : (
                   <>
                     <Send className="w-4 h-4" />
-                    Apply For Trade Account
+                    Apply For Program
                   </>
                 )}
               </button>
