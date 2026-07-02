@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  ArrowLeft, Heart, Scale, ShoppingBag, Eye, Download, Info, Check, 
-  MapPin, Clock, Truck, ShieldCheck, ChevronRight, Star, HelpCircle, 
-  BookOpen, ClipboardCheck, ArrowRight, Sparkles 
+  ArrowLeft, Heart, ShoppingBag, Eye, Info, Check,
+  MapPin, Truck, ShieldCheck, ChevronRight, Star, HelpCircle,
+  BookOpen, ArrowRight, Sparkles
 } from 'lucide-react';
 import { TileProduct } from '../types';
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -46,9 +46,6 @@ export default function ProductDetailPage({
     partner: string;
   } | null>(null);
   const [estimating, setEstimating] = useState(false);
-  const [sampleRequested, setSampleRequested] = useState(false);
-  const [cadDownloading, setCadDownloading] = useState(false);
-  const [cadDownloaded, setCadDownloaded] = useState(false);
 
   const { data: product, isLoading: productLoading } = useProduct(productId);
   const { data: relatedProducts } = useRelatedProducts(product?.id || '', 4);
@@ -87,7 +84,6 @@ export default function ProductDetailPage({
 
   // Wishlist / Compare helper checks
   const isInWishlist = wishlist.some(item => item.id === product.id);
-  const isInCompare = comparedProducts.some(item => item.id === product.id);
 
 
   const estimateDelivery = () => {
@@ -106,19 +102,6 @@ export default function ProductDetailPage({
     }, 1000);
   };
 
-  const handleRequestSample = () => {
-    setSampleRequested(true);
-    setTimeout(() => setSampleRequested(false), 4000);
-  };
-
-  const handleDownloadCAD = () => {
-    setCadDownloading(true);
-    setTimeout(() => {
-      setCadDownloading(false);
-      setCadDownloaded(true);
-      setTimeout(() => setCadDownloaded(false), 3000);
-    }, 1200);
-  };
 
   const breadcrumbs = [
     { label: 'Collections', hash: '#/collections' },
@@ -258,67 +241,20 @@ export default function ProductDetailPage({
                 </button>
               </div>
 
-              {/* Sample and CAD sheets buttons */}
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={handleRequestSample}
-                  className={`py-3.5 font-mono text-[9px] tracking-widest uppercase font-semibold transition-all duration-300 border flex items-center justify-center gap-1.5 cursor-pointer ${
-                    sampleRequested
-                      ? 'bg-emerald-600 text-warmwhite border-emerald-600'
-                      : 'bg-white text-charcoal border-charcoal/15 hover:border-gold-500'
-                  }`}
-                >
-                  {sampleRequested ? <ClipboardCheck className="w-3.5 h-3.5 animate-bounce" /> : <Clock className="w-3.5 h-3.5" />}
-                  {sampleRequested ? 'Sample Booked!' : 'Order Free Sample'}
-                </button>
-
-                <button
-                  onClick={handleDownloadCAD}
-                  className={`py-3.5 font-mono text-[9px] tracking-widest uppercase font-semibold transition-all duration-300 border flex items-center justify-center gap-1.5 cursor-pointer ${
-                    cadDownloaded
-                      ? 'bg-emerald-600 text-warmwhite border-emerald-600'
-                      : 'bg-white text-charcoal border-charcoal/15 hover:border-gold-500'
-                  }`}
-                >
-                  <Download className={`w-3.5 h-3.5 ${cadDownloading ? 'animate-spin' : ''}`} />
-                  {cadDownloading ? 'Generating...' : cadDownloaded ? 'Downloaded' : 'CAD Slab Spec'}
-                </button>
-              </div>
-
               {/* Quick specs utility row */}
-              <div className="grid grid-cols-2 gap-2 mt-1">
-                <button
-                  onClick={() => {
-                    if (isInWishlist) {
-                      onRemoveFromWishlist(product.id);
-                    } else {
-                      onAddToWishlist(product);
-                    }
-                  }}
-                  className="py-2.5 border border-charcoal/10 hover:border-gold-500 text-charcoal hover:bg-gold-50 text-[9px] font-mono tracking-wider uppercase transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <Heart className={`w-3.5 h-3.5 ${isInWishlist ? 'fill-gold-600 text-gold-600' : ''}`} />
-                  {isInWishlist ? 'Saved in Wishlist' : 'Add to Wishlist'}
-                </button>
-
-                <button
-                  onClick={() => {
-                    if (isInCompare) {
-                      onRemoveFromCompare(product.id);
-                    } else {
-                      if (comparedProducts.length >= 3) {
-                        alert("Comparison buffer is full. Remove other tiles first.");
-                        return;
-                      }
-                      onAddToCompare(product);
-                    }
-                  }}
-                  className="py-2.5 border border-charcoal/10 hover:border-gold-500 text-charcoal hover:bg-gold-50 text-[9px] font-mono tracking-wider uppercase transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <Scale className={`w-3.5 h-3.5 ${isInCompare ? 'text-gold-600' : ''}`} />
-                  {isInCompare ? 'In Comparison' : 'Compare Surface'}
-                </button>
-              </div>
+              <button
+                onClick={() => {
+                  if (isInWishlist) {
+                    onRemoveFromWishlist(product.id);
+                  } else {
+                    onAddToWishlist(product);
+                  }
+                }}
+                className="py-2.5 border border-charcoal/10 hover:border-gold-500 text-charcoal hover:bg-gold-50 text-[9px] font-mono tracking-wider uppercase transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer w-full mt-1"
+              >
+                <Heart className={`w-3.5 h-3.5 ${isInWishlist ? 'fill-gold-600 text-gold-600' : ''}`} />
+                {isInWishlist ? 'Saved in Wishlist' : 'Add to Wishlist'}
+              </button>
             </div>
 
             {/* Usage warning tag */}
