@@ -47,8 +47,6 @@ export default function TileCollections({
   const { data: categoriesData } = useCategories();
 
   const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [selectedProduct, setSelectedProduct] = useState<TileProduct | null>(null);
-  const [sampleRequested, setSampleRequested] = useState<boolean>(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Advanced filters state
@@ -96,20 +94,16 @@ export default function TileCollections({
     localStorage.setItem('atelier-recently-viewed', JSON.stringify(updated));
   };
 
-  const handleSelectProduct = (tile: TileProduct) => {
-    setSelectedProduct(tile);
-    addToRecentlyViewed(tile);
-  };
-
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [activeCategory, selectedFilters, sortBy]);
 
-  // Synchronize with search selection
+  // Synchronize with search selection — navigate directly to product page
   useEffect(() => {
     if (externalSelectedTile) {
-      handleSelectProduct(externalSelectedTile);
+      addToRecentlyViewed(externalSelectedTile);
+      onOpenProductDetail(externalSelectedTile);
       setActiveCategory('all');
       onClearExternalSelectedTile?.();
     }
@@ -247,13 +241,6 @@ export default function TileCollections({
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
-  const handleRequestSample = () => {
-    setSampleRequested(true);
-    setTimeout(() => {
-      setSampleRequested(false);
-    }, 4000);
-  };
-
   const handleResetFilters = () => {
     setSelectedFilters({
       brands: [],
@@ -361,7 +348,7 @@ export default function TileCollections({
               </button>
 
               {/* Click zone for product details */}
-              <div onClick={() => handleSelectProduct(product)} className="flex-1 flex flex-col">
+              <div onClick={() => { addToRecentlyViewed(product); onOpenProductDetail(product); }} className="flex-1 flex flex-col cursor-pointer">
                 {/* Product Image Frame */}
                 <div className="relative aspect-square overflow-hidden bg-ivory">
                   <ProgressiveImage
@@ -646,7 +633,7 @@ export default function TileCollections({
               {recentlyViewed.map(tile => (
                 <div
                   key={`recent-${tile.id}`}
-                  onClick={() => handleSelectProduct(tile)}
+                  onClick={() => { addToRecentlyViewed(tile); onOpenProductDetail(tile); }}
                   className="bg-white border border-charcoal/5 p-3 flex items-center gap-3 cursor-pointer hover:border-gold-400 hover:shadow-md transition-all group"
                 >
                   <div className="w-12 h-12 overflow-hidden bg-ivory shrink-0 border border-charcoal/5">
@@ -664,259 +651,6 @@ export default function TileCollections({
           </div>
         )}
       </div>
-
-      {/* Blueprints and Specs Modal Backdrop */}
-      <AnimatePresence>
-        {selectedProduct && (
-          <div className="fixed inset-0 z-50 overflow-y-auto">
-            {/* Dark glass backdrop cover */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedProduct(null)}
-              className="fixed inset-0 bg-charcoal/40 backdrop-blur-md"
-            />
-
-            {/* Modal Body Container */}
-            <div className="flex min-h-screen items-center justify-center p-4 sm:p-6 lg:p-8 relative">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 30 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 30 }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                className="relative bg-warmwhite max-w-4xl w-full border border-charcoal/10 overflow-hidden shadow-2xl flex flex-col md:flex-row"
-                style={{ contentVisibility: 'auto' }}
-              >
-                {/* Modal main close toggle */}
-                <button
-                  onClick={() => setSelectedProduct(null)}
-                  className="absolute top-4 right-4 z-20 p-2.5 rounded-full bg-charcoal/90 text-warmwhite hover:bg-gold-500 hover:text-charcoal transition-all duration-300 cursor-pointer shadow-lg"
-                  aria-label="Close"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-
-                {/* Left Side: Product Zoom Illustration */}
-                <div className="w-full md:w-1/2 relative bg-ivory aspect-[4/3] md:aspect-auto">
-                  <ProgressiveImage
-                    src={selectedProduct.image}
-                    alt={selectedProduct.name}
-                    className="w-full h-full"
-                    referrerPolicy="no-referrer"
-                  />
-                  {/* Floating badge details */}
-                  <div className="absolute bottom-4 left-4 bg-charcoal/90 text-warmwhite px-4 py-2 font-mono text-[9px] tracking-widest uppercase">
-                    ORIGIN: {selectedProduct.origin}
-                  </div>
-                </div>
-
-                {/* Right Side: Detailed Tech Specs Sheets */}
-                <div className="w-full md:w-1/2 p-6 sm:p-8 flex flex-col justify-between">
-                  <div>
-                    {/* Header Details */}
-                    <div className="flex items-center justify-between mb-3 border-b border-charcoal/5 pb-3">
-                      <span className="font-mono text-[10px] tracking-widest text-charcoal/40 uppercase">
-                        MODEL SKU: {selectedProduct.code}
-                      </span>
-                      <span className="font-mono text-[10px] tracking-widest bg-gold-400 text-charcoal font-semibold px-2.5 py-0.5 rounded-sm uppercase">
-                        {selectedProduct.priceCategory} CLASS
-                      </span>
-                    </div>
-
-                    <h3 className="font-serif text-2xl sm:text-3xl font-bold text-charcoal tracking-tight mb-3">
-                      {selectedProduct.name}
-                    </h3>
-
-                    <p className="font-sans text-xs sm:text-sm text-charcoal/70 leading-relaxed mb-6">
-                      {selectedProduct.description}
-                    </p>
-
-                    {/* Tech Table */}
-                    <div className="space-y-2.5 mb-6">
-                      <div className="text-[10px] font-mono tracking-widest text-charcoal/40 uppercase mb-2">
-                        TECHNICAL SPECIFICATIONS
-                      </div>
-                      
-                      <div className="flex items-center justify-between text-xs py-1.5 border-b border-charcoal/5">
-                        <div className="flex items-center gap-2 text-charcoal/50 font-sans">
-                          <Layers className="w-3.5 h-3.5 text-gold-500" />
-                          <span>Material Base</span>
-                        </div>
-                        <span className="font-mono text-charcoal font-medium text-right">{selectedProduct.material}</span>
-                      </div>
-
-                      <div className="flex items-center justify-between text-xs py-1.5 border-b border-charcoal/5">
-                        <div className="flex items-center gap-2 text-charcoal/50 font-sans">
-                          <Shield className="w-3.5 h-3.5 text-gold-500" />
-                          <span>Surface Glaze</span>
-                        </div>
-                        <span className="font-mono text-charcoal font-medium text-right">{selectedProduct.finish}</span>
-                      </div>
-
-                      <div className="flex items-center justify-between text-xs py-1.5 border-b border-charcoal/5">
-                        <div className="flex items-center gap-2 text-charcoal/50 font-sans">
-                          <Ruler className="w-3.5 h-3.5 text-gold-500" />
-                          <span>Modular Sizing</span>
-                        </div>
-                        <span className="font-mono text-charcoal font-medium text-right">{selectedProduct.size}</span>
-                      </div>
-
-                      <div className="flex items-center justify-between text-xs py-1.5 border-b border-charcoal/10">
-                        <div className="flex items-center gap-2 text-charcoal/50 font-sans">
-                          <MapPin className="w-3.5 h-3.5 text-gold-500" />
-                          <span>Origin Quarries</span>
-                        </div>
-                        <span className="font-mono text-charcoal font-medium text-right">{selectedProduct.origin}</span>
-                      </div>
-                    </div>
-
-                    {/* Feature badges list */}
-                    <div className="mb-8">
-                      <div className="text-[10px] font-mono tracking-widest text-charcoal/40 uppercase mb-2">
-                        ARCHITECTURAL FEATURES
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {selectedProduct.features.map((feat, index) => (
-                          <span
-                            key={index}
-                            className="text-[9.5px] font-mono tracking-wider bg-charcoal/5 text-charcoal/80 px-2.5 py-1 rounded-sm border border-charcoal/5"
-                          >
-                            ✓ {feat}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Actions Row */}
-                  <div className="flex flex-col gap-2 pt-4 border-t border-charcoal/5">
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        onClick={handleRequestSample}
-                        className={`py-3 text-center text-xs tracking-widest font-sans uppercase font-semibold transition-all duration-300 relative overflow-hidden ${
-                          sampleRequested
-                            ? 'bg-emerald-600 text-warmwhite border-emerald-600'
-                            : 'bg-charcoal text-warmwhite border border-charcoal hover:bg-gold-500 hover:text-charcoal hover:border-gold-500 cursor-pointer'
-                        }`}
-                      >
-                        {sampleRequested ? (
-                          <span className="flex items-center justify-center gap-1">
-                            <ClipboardCheck className="w-4 h-4 animate-bounce" />
-                            Sample Dispatched
-                          </span>
-                        ) : (
-                          'Request Free Sample'
-                        )}
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          setSelectedProduct(null);
-                          onSelectTileForVisualizer(selectedProduct);
-                          // Scroll to visualizer
-                          const element = document.getElementById('visualizer');
-                          if (element) {
-                            element.scrollIntoView({ behavior: 'smooth' });
-                          }
-                        }}
-                        className="py-3 bg-transparent border border-charcoal/15 hover:border-gold-500 text-charcoal hover:text-gold-600 transition-all duration-300 text-xs tracking-widest font-mono uppercase font-semibold flex items-center justify-center gap-1 cursor-pointer"
-                      >
-                        Spatial Preview
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-
-                    {/* Add to Inquiry & Full Details Row */}
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        onClick={() => {
-                          onAddToInquiry(selectedProduct);
-                        }}
-                        className="py-3 bg-gold-500 text-charcoal hover:bg-gold-600 transition-all duration-300 text-xs tracking-widest font-mono uppercase font-semibold flex items-center justify-center gap-1.5 cursor-pointer"
-                      >
-                        <ShoppingBag className="w-3.5 h-3.5" />
-                        Add to Inquiry
-                      </button>
-                      <button
-                        onClick={() => {
-                          if (selectedProduct) addToRecentlyViewed(selectedProduct);
-                          setSelectedProduct(null);
-                          onOpenProductDetail(selectedProduct);
-                        }}
-                        className="py-3 border border-charcoal/15 hover:border-gold-500 text-charcoal hover:bg-gold-50 transition-all duration-300 text-xs tracking-widest font-mono uppercase font-semibold flex items-center justify-center gap-1.5 cursor-pointer"
-                      >
-                        <Info className="w-3.5 h-3.5" />
-                        Full Details
-                      </button>
-                    </div>
-
-                    {/* Quick Specs Utility Triggers: Wishlist, Compare, Calculator */}
-                    <div className="grid grid-cols-3 gap-2 mt-1">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (isInWishlist(selectedProduct.id)) {
-                            onRemoveFromWishlist(selectedProduct.id);
-                          } else {
-                            onAddToWishlist(selectedProduct);
-                          }
-                        }}
-                        className="py-2 border border-charcoal/10 hover:border-gold-500 text-charcoal hover:bg-gold-50 text-[10px] font-mono tracking-wide uppercase transition-all duration-300 flex items-center justify-center gap-1 cursor-pointer"
-                      >
-                        <Heart className={`w-3 h-3 ${isInWishlist(selectedProduct.id) ? 'fill-gold-600 text-gold-600' : ''}`} />
-                        Wishlist
-                      </button>
-                      
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (isInCompare(selectedProduct.id)) {
-                            onRemoveFromCompare(selectedProduct.id);
-                          } else {
-                            if (comparedProducts.length >= 3) {
-                              alert("You can compare up to 3 products.");
-                              return;
-                            }
-                            onAddToCompare(selectedProduct);
-                          }
-                        }}
-                        className="py-2 border border-charcoal/10 hover:border-gold-500 text-charcoal hover:bg-gold-50 text-[10px] font-mono tracking-wide uppercase transition-all duration-300 flex items-center justify-center gap-1 cursor-pointer"
-                      >
-                        <Scale className={`w-3 h-3 ${isInCompare(selectedProduct.id) ? 'text-gold-600' : ''}`} />
-                        Compare
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedProduct(null);
-                          onOpenCalculator(selectedProduct);
-                        }}
-                        className="py-2 border border-charcoal/10 hover:border-gold-500 text-charcoal hover:bg-gold-50 text-[10px] font-mono tracking-wide uppercase transition-all duration-300 flex items-center justify-center gap-1 cursor-pointer"
-                      >
-                        <Calculator className="w-3 h-3 text-gold-600" />
-                        Calculator
-                      </button>
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        setSelectedProduct(null);
-                        onOpenBooking();
-                      }}
-                      className="py-2 text-center text-[10px] font-mono tracking-widest uppercase text-gold-600 hover:text-gold-700 font-semibold flex items-center justify-center gap-1 cursor-pointer hover:underline"
-                    >
-                      <BookOpen className="w-3.5 h-3.5" />
-                      Book private consultation for project quotes
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        )}
-      </AnimatePresence>
 
       {/* Floating Compare Action Bar at bottom */}
       <AnimatePresence>
