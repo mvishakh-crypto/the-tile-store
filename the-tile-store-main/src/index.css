@@ -26,6 +26,13 @@
   --glass-border: rgba(234, 228, 219, 0.07);
 }
 
+/* Intentionally dark sections must stay dark in dark mode.
+   --color-charcoal follows --text-primary which becomes light,
+   so we pin bg-charcoal back to the original dark value. */
+.dark .bg-charcoal {
+  background-color: #1B1B1B;
+}
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Playfair Display", Georgia, serif;
