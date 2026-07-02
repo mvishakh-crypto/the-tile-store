@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'motion/react';
 import { Landmark, Layers, Layout, Clock, Award, Hammer, BookOpen } from 'lucide-react';
 
 // Static data outside component so the useEffect can reference it without stale-closure issues
@@ -55,24 +54,20 @@ export default function WhyChooseUs() {
         if (!entries[0].isIntersecting || hasAnimated) return;
         setHasAnimated(true);
 
-        STATS_DATA.forEach(({ id, target }, statIdx) => {
-          // Stagger each card's counter start by 120ms
-          setTimeout(() => {
-            const DURATION = 1800; // total ms for the count-up
-            const start = performance.now();
+        STATS_DATA.forEach(({ id, target }) => {
+          const DURATION = 1800;
+          const start = performance.now();
 
-            const tick = (now: number) => {
-              const elapsed = now - start;
-              const progress = Math.min(elapsed / DURATION, 1);
-              // Cubic ease-out: fast at first, decelerates to final value
-              const eased = 1 - Math.pow(1 - progress, 3);
-              const value = progress < 1 ? Math.floor(eased * target) : target;
-              setCounts(prev => ({ ...prev, [id]: value }));
-              if (progress < 1) requestAnimationFrame(tick);
-            };
+          const tick = (now: number) => {
+            const elapsed = now - start;
+            const progress = Math.min(elapsed / DURATION, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const value = progress < 1 ? Math.floor(eased * target) : target;
+            setCounts((prev: Record<string, number>) => ({ ...prev, [id]: value }));
+            if (progress < 1) requestAnimationFrame(tick);
+          };
 
-            requestAnimationFrame(tick);
-          }, statIdx * 120);
+          requestAnimationFrame(tick);
         });
       },
       { threshold: 0.25 }
@@ -114,15 +109,10 @@ export default function WhyChooseUs() {
 
         {/* Stats Grid Layout styled as luxurious Bento cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="stats-bento-grid">
-          {STATS_DATA.map((stat, idx) => (
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-40px' }}
-              transition={{ duration: 0.6, delay: idx * 0.08 }}
+          {STATS_DATA.map((stat) => (
+            <div
               key={stat.id}
               className="bg-white/5 border border-white/10 p-8 flex flex-col justify-between hover:bg-white/10 hover:border-gold-500/50 transition-all duration-500 rounded-none group relative"
-              style={{ contentVisibility: 'auto' }}
               id={`stat-bento-card-${stat.id}`}
             >
               {/* Abs hover trace outline */}
@@ -148,7 +138,7 @@ export default function WhyChooseUs() {
                   {stat.subtitle}
                 </p>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
