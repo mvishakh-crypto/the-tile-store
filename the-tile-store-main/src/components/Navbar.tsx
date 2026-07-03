@@ -85,22 +85,16 @@ export default function Navbar({
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Logo Brand Link */}
-          <div 
+          <div
             onClick={() => handleItemClick({ label: 'Home', hash: '#/' })}
-            className="group flex items-center gap-3 cursor-pointer select-none"
+            className="group flex items-center cursor-pointer select-none"
             id="brand-logo"
           >
-            <div className="w-8 h-8 border-2 border-[#C9A227] flex items-center justify-center text-[10px] font-bold text-charcoal group-hover:bg-[#C9A227] group-hover:text-[#FCFBF8] transition-all duration-300">
-              TS
-            </div>
-            <div className="flex flex-col">
-              <span className="font-serif text-sm tracking-[0.3em] uppercase font-bold text-charcoal group-hover:text-[#C9A227] transition-colors duration-300">
-                The Tile Store
-              </span>
-              <span className="font-mono text-[8px] tracking-[0.25em] uppercase text-charcoal/40">
-                SURFACES & INTERIORS ARCHIVE
-              </span>
-            </div>
+            <img
+              src="/tts-logo.png"
+              alt="The Tile Store"
+              className="h-8 w-auto transition-opacity duration-300 group-hover:opacity-70 dark:brightness-0 dark:invert"
+            />
           </div>
 
           <nav className="hidden lg:flex items-center gap-8" id="desktop-nav-menu">
