@@ -4,7 +4,7 @@ import StatCard from '../components/StatCard';
 import DataTable from '../components/DataTable';
 import StatusBadge from '../components/StatusBadge';
 import { adminGetAnalyticsSummary, adminGetInquiries } from '../../services/adminService';
-import { Package, MessageSquare, Calendar, Eye, Search, AlertCircle, ArrowUpRight } from 'lucide-react';
+import { Package, MessageSquare, Calendar, Eye, AlertCircle } from 'lucide-react';
 
 interface DashboardPageProps {
   onNavigate: (hash: string) => void;
@@ -71,7 +71,6 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
             title="Total Products"
             value={stats?.totalProducts ?? 0}
             icon={<Package size={20} />}
-            trend={{ value: '+4', direction: 'up', label: 'this month' }}
             loading={loading}
           />
           <StatCard
@@ -98,18 +97,17 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
             icon={<Eye size={20} />}
             iconBgColor="var(--admin-purple-bg)"
             iconColor="var(--admin-purple)"
-            trend={{ value: '+18.4%', direction: 'up', label: 'vs last week' }}
             loading={loading}
           />
         </section>
 
-        <div className="admin-grid-2" style={{ marginTop: '24px' }}>
+        <div style={{ marginTop: '24px' }}>
           {/* Recent Inquiries Panel */}
           <div className="admin-card">
             <div className="admin-card-header">
               <div>
                 <div className="admin-card-title">Recent Inquiries</div>
-                <div className="admin-card-subtitle font-sans">Latest customer and architect inquiries</div>
+                <div className="admin-card-subtitle font-sans">Latest customer inquiries</div>
               </div>
               <button
                 className="admin-btn admin-btn-ghost admin-btn-sm"
@@ -145,66 +143,6 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
                 ]}
                 data={recentInquiries}
               />
-            </div>
-          </div>
-
-          {/* Popular Searches & AI Insights */}
-          <div className="admin-card">
-            <div className="admin-card-header">
-              <div>
-                <div className="admin-card-title">AI Search & Query Trends</div>
-                <div className="admin-card-subtitle font-sans">Top customer searches powered by vector AI</div>
-              </div>
-              <button
-                className="admin-btn admin-btn-ghost admin-btn-sm"
-                onClick={() => onNavigate('#/admin/ai')}
-              >
-                Vector logs
-              </button>
-            </div>
-            <div className="admin-card-body">
-              {loading ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} style={{ height: '32px', background: '#e5e7eb', borderRadius: '4px' }} className="animate-pulse" />
-                  ))}
-                </div>
-              ) : !stats?.topSearches || stats.topSearches.length === 0 ? (
-                <div className="admin-empty" style={{ padding: '30px' }}>
-                  <Search className="admin-empty-icon" />
-                  <div className="admin-empty-title">No search analytics recorded</div>
-                  <div className="admin-empty-desc">Once users perform searches on the website, they will appear here.</div>
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {stats.topSearches.map((item: any, i: number) => (
-                    <div
-                      key={i}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '10px 12px',
-                        background: 'var(--admin-bg)',
-                        borderRadius: 'var(--admin-radius)',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--admin-text-secondary)', width: '16px' }}>
-                          #{i + 1}
-                        </span>
-                        <span style={{ fontSize: '13.5px', fontWeight: 600 }}>&ldquo;{item.query}&rdquo;</span>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <span style={{ fontSize: '12px', color: 'var(--admin-text-secondary)' }}>
-                          {item.count} searches
-                        </span>
-                        <ArrowUpRight size={14} style={{ color: 'var(--admin-success)' }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
         </div>

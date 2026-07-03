@@ -317,34 +317,6 @@ export async function adminGetBookings(
     try {
       const stored = localStorage.getItem('tts-local-bookings');
       let bookings = stored ? JSON.parse(stored) : [];
-      if (bookings.length === 0) {
-        bookings = [
-          {
-            id: 'sim-book-01',
-            name: 'Sophia Loren',
-            email: 'sophia@architects.it',
-            phone: '+39 02 876543',
-            project_type: 'Luxury Villa',
-            booking_date: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0],
-            booking_time: '10:00 AM',
-            status: 'pending',
-            created_at: new Date().toISOString(),
-          },
-          {
-            id: 'sim-book-02',
-            name: 'David Beckham',
-            email: 'david@brand.com',
-            phone: '+44 7911 123456',
-            project_type: 'Penthouse Renovation',
-            booking_date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
-            booking_time: '2:30 PM',
-            status: 'confirmed',
-            created_at: new Date().toISOString(),
-          }
-        ];
-        localStorage.setItem('tts-local-bookings', JSON.stringify(bookings));
-      }
-
       if (status) {
         bookings = bookings.filter((b: any) => b.status === status);
       }
@@ -472,6 +444,7 @@ export interface AnalyticsSummary {
   totalBookings: number;
   pendingBookings: number;
   totalViews: number;
+  avgDailyInquiries: number;
   topProducts: Array<{ name: string; views: number }>;
   topSearches: Array<{ query: string; count: number }>;
 }
@@ -497,21 +470,25 @@ export async function adminGetAnalyticsSummary(): Promise<AnalyticsSummary> {
     const totalBookings = bookings.length;
     const pendingBookings = bookings.filter(b => b.status === 'pending' || b.status === 'confirmed').length;
 
+    // Compute true 7-day daily average using actual timestamps
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const weeklyInquiries = inquiries.filter(i => new Date(i.created_at) >= sevenDaysAgo).length;
+    const avgDailyInquiries = parseFloat((weeklyInquiries / 7).toFixed(1));
+
     return {
       totalProducts: productsCount,
       totalInquiries,
       pendingInquiries,
       totalBookings,
       pendingBookings,
-      totalViews: 412,
+      totalViews: 0,
+      avgDailyInquiries,
       topProducts: getLocalProducts().slice(0, 3).map(p => ({ name: p.name, views: p.popularityScore * 2 })),
-      topSearches: [
-        { query: 'Calacatta gold marble', count: 48 },
-        { query: 'Matte concrete floor', count: 32 },
-        { query: 'Polished bathroom tiles', count: 21 },
-      ],
+      topSearches: [],
     };
   }
+
+  const sevenDaysAgoISO = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
   const [
     { count: totalProducts },
@@ -520,8 +497,8 @@ export async function adminGetAnalyticsSummary(): Promise<AnalyticsSummary> {
     { count: totalBookings },
     { count: pendingBookings },
     { count: totalViews },
+    { count: weeklyInquiries },
     { data: topProductsData },
-    { data: topSearchesData },
   ] = await Promise.all([
     supabase.from('products').select('*', { count: 'exact', head: true }),
     supabase.from('inquiries').select('*', { count: 'exact', head: true }),
@@ -529,12 +506,11 @@ export async function adminGetAnalyticsSummary(): Promise<AnalyticsSummary> {
     supabase.from('bookings').select('*', { count: 'exact', head: true }),
     supabase.from('bookings').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('product_views').select('*', { count: 'exact', head: true }),
-    supabase.rpc('get_popular_searches', { limit_count: 5 }),
-    supabase
-      .from('product_views')
-      .select('product_id, products(name)')
-      .limit(5),
+    supabase.from('inquiries').select('*', { count: 'exact', head: true }).gte('created_at', sevenDaysAgoISO),
+    supabase.from('product_views').select('product_id, products(name)').limit(5),
   ]);
+
+  const avgDailyInquiries = parseFloat(((weeklyInquiries ?? 0) / 7).toFixed(1));
 
   return {
     totalProducts: totalProducts ?? 0,
@@ -543,10 +519,11 @@ export async function adminGetAnalyticsSummary(): Promise<AnalyticsSummary> {
     totalBookings: totalBookings ?? 0,
     pendingBookings: pendingBookings ?? 0,
     totalViews: totalViews ?? 0,
-    topProducts: (topProductsData as Array<{ products: { name: string }; count: number }> | null || []).map(
-      r => ({ name: r.products?.name || 'Unknown', views: r.count || 0 })
+    avgDailyInquiries,
+    topProducts: (topProductsData as Array<{ products: { name: string } }> | null || []).map(
+      r => ({ name: r.products?.name || 'Unknown', views: 0 })
     ),
-    topSearches: (topSearchesData as Array<{ query: string; count: number }> | null || []),
+    topSearches: [],
   };
 }
 
