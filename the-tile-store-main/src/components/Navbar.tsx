@@ -93,7 +93,7 @@ export default function Navbar({
             <img
               src="/tile-logo.png"
               alt="The Tile Store"
-              className="h-14 w-auto max-w-[180px] object-contain transition-opacity duration-300 group-hover:opacity-80 [filter:brightness(0)_sepia(1)_saturate(4)_hue-rotate(8deg)]"
+              className="h-14 w-auto max-w-[180px] object-contain transition-opacity duration-300 group-hover:opacity-80 [filter:brightness(0)_invert(0.5)_sepia(1)_saturate(700%)_hue-rotate(5deg)_brightness(0.85)]"
             />
           </div>
 
