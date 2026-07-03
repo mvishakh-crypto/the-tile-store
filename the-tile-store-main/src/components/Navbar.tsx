@@ -209,6 +209,13 @@ export default function Navbar({
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
+
+            {/* Brand logo — top right */}
+            <img
+              src="/tile-logo.png"
+              alt="The Tile Store"
+              className="h-8 w-auto dark:brightness-0 dark:invert"
+            />
           </div>
         </div>
       </motion.header>
