@@ -283,6 +283,27 @@ export async function adminUpdateInquiryStatus(
     .eq('id', id);
 }
 
+export async function adminDeleteInquiry(id: string) {
+  if (!isSupabaseConfigured) {
+    try {
+      const stored = localStorage.getItem('tts-local-inquiries');
+      if (stored) {
+        const inquiries = JSON.parse(stored);
+        localStorage.setItem('tts-local-inquiries', JSON.stringify(
+          inquiries.filter((inq: any) => inq.id !== id)
+        ));
+      }
+    } catch (e) {}
+    return;
+  }
+
+  // Delete child rows first in case there's no ON DELETE CASCADE
+  await supabase.from('inquiry_items').delete().eq('inquiry_id', id);
+
+  const { error } = await supabase.from('inquiries').delete().eq('id', id);
+  if (error) throw new Error(handleSupabaseError(error).message);
+}
+
 // ============================================================
 // BOOKING MANAGEMENT
 // ============================================================
