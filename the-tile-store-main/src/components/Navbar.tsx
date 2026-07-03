@@ -91,9 +91,9 @@ export default function Navbar({
             id="brand-logo"
           >
             <img
-              src="/tts-logo.png"
+              src="/tile-logo.png"
               alt="The Tile Store"
-              className="h-8 w-auto transition-opacity duration-300 group-hover:opacity-70 dark:brightness-0 dark:invert"
+              className="h-8 w-auto transition-opacity duration-300 group-hover:opacity-80 [filter:brightness(0)_sepia(1)_saturate(4)_hue-rotate(8deg)]"
             />
           </div>
 
@@ -210,12 +210,6 @@ export default function Navbar({
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
 
-            {/* Brand logo — top right */}
-            <img
-              src="/tile-logo.png"
-              alt="The Tile Store"
-              className="h-8 w-auto dark:brightness-0 dark:invert"
-            />
           </div>
         </div>
       </motion.header>
