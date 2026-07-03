@@ -76,27 +76,27 @@ export default function Navbar({
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-6 md:px-12 py-4 ${
+        className={`fixed top-0 left-0 right-0 z-50 relative transition-all duration-500 px-6 md:px-12 py-4 ${
           scrolled 
             ? 'bg-warmwhite/75 backdrop-blur-xl border-b border-charcoal/5 shadow-sm py-3' 
             : 'bg-transparent py-6'
         }`}
         id="navbar-header"
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          {/* Logo Brand Link */}
-          <div
-            onClick={() => handleItemClick({ label: 'Home', hash: '#/' })}
-            className="group flex items-center cursor-pointer select-none"
-            id="brand-logo"
-          >
-            <img
-              src="/tile-logo.png"
-              alt="The Tile Store"
-              className="h-14 w-auto max-w-[180px] object-contain transition-opacity duration-300 group-hover:opacity-80 [filter:brightness(0)_invert(0.412)_sepia(1)_saturate(372%)_hue-rotate(6.5deg)]"
-            />
-          </div>
+        {/* Logo — flush to top-left corner, outside normal flow */}
+        <div
+          onClick={() => handleItemClick({ label: 'Home', hash: '#/' })}
+          className="absolute left-0 top-0 bottom-0 w-[72px] flex items-center justify-center group cursor-pointer select-none"
+          id="brand-logo"
+        >
+          <img
+            src="/tile-logo.png"
+            alt="The Tile Store"
+            className="w-[64px] h-[64px] object-contain transition-opacity duration-300 group-hover:opacity-80 [filter:brightness(0)_invert(0.412)_sepia(1)_saturate(372%)_hue-rotate(6.5deg)]"
+          />
+        </div>
 
+        <div className="max-w-7xl mx-auto flex items-center justify-between pl-[80px]">
           <nav className="hidden lg:flex items-center gap-8" id="desktop-nav-menu">
             {navItems.map((item) => {
               const active = isActive(item.hash);
@@ -125,7 +125,7 @@ export default function Navbar({
           </nav>
 
           {/* Call to action & Menu Toggle */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 ml-auto">
             {/* Elegant Desktop Search Icon Button */}
             <button
               onClick={onOpenSearch}
