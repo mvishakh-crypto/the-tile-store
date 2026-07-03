@@ -83,20 +83,20 @@ export default function Navbar({
         }`}
         id="navbar-header"
       >
-        {/* Logo — flush to top-left corner, outside normal flow */}
+        {/* Logo — top-left corner, slightly inset from edge */}
         <div
           onClick={() => handleItemClick({ label: 'Home', hash: '#/' })}
-          className="absolute left-0 top-0 bottom-0 w-[72px] flex items-center justify-center group cursor-pointer select-none"
+          className="absolute left-0 top-0 bottom-0 w-[128px] flex items-center justify-center pl-4 pr-1 group cursor-pointer select-none"
           id="brand-logo"
         >
           <img
             src="/tile-logo.png"
             alt="The Tile Store"
-            className="w-[64px] h-[64px] object-contain transition-opacity duration-300 group-hover:opacity-80 [filter:brightness(0)_invert(0.412)_sepia(1)_saturate(372%)_hue-rotate(6.5deg)]"
+            className="w-full h-auto max-h-[52px] object-contain transition-opacity duration-300 group-hover:opacity-80 [filter:brightness(0)_invert(0.412)_sepia(1)_saturate(372%)_hue-rotate(6.5deg)]"
           />
         </div>
 
-        <div className="max-w-7xl mx-auto flex items-center justify-between pl-[80px]">
+        <div className="max-w-7xl mx-auto flex items-center justify-between pl-20 lg:pl-[136px]">
           <nav className="hidden lg:flex items-center gap-8" id="desktop-nav-menu">
             {navItems.map((item) => {
               const active = isActive(item.hash);
