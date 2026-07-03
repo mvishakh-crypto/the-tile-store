@@ -97,7 +97,7 @@ export default function Navbar({
         </div>
 
         <div className="max-w-7xl mx-auto flex items-center justify-between pl-20 lg:pl-[88px]">
-          <nav className="hidden lg:flex items-center gap-8" id="desktop-nav-menu">
+          <nav className="hidden lg:flex items-center gap-8 mr-10" id="desktop-nav-menu">
             {navItems.map((item) => {
               const active = isActive(item.hash);
               return (
