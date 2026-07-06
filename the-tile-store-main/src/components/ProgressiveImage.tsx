@@ -53,7 +53,7 @@ export default function ProgressiveImage({
   };
 
   return (
-    <div className={`relative overflow-hidden bg-[#F2EFE9] ${className}`} id={id ? `prog-container-${id}` : undefined}>
+    <div className={`relative overflow-hidden bg-ivory ${className}`} id={id ? `prog-container-${id}` : undefined}>
       {/* 1. Low-res Thumbnail (if available) / Warm luxurious shimmer skeleton */}
       {thumbnailSrc ? (
         <img

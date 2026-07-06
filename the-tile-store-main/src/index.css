@@ -26,11 +26,14 @@
   --glass-border: rgba(234, 228, 219, 0.07);
 }
 
-/* Intentionally dark sections must stay dark in dark mode.
-   --color-charcoal follows --text-primary which becomes light,
-   so we pin bg-charcoal back to the original dark value. */
+/* Intentionally dark sections stay dark in dark mode.
+   bg-charcoal is pinned to dark, but warmwhite/white tokens become dark
+   globally in .dark — so we restore their light values here so that
+   text-warmwhite and text-white remain visible inside charcoal sections. */
 .dark .bg-charcoal {
   background-color: #1B1B1B;
+  --bg-card: #FCFBF8;
+  --bg-pure: #FFFFFF;
 }
 
 @theme {

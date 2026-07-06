@@ -104,7 +104,7 @@ export default function BrandShowcase() {
                     {brand.highlights.map((highlight, idx) => (
                       <span
                         key={idx}
-                        className="text-[8px] font-mono tracking-widest uppercase bg-[#F8F5F0] text-charcoal/70 border border-[#D6C2A1]/15 px-2.5 py-1 transition-colors duration-300 group-hover:bg-white group-hover:border-[#C9A227]/30"
+                        className="text-[8px] font-mono tracking-widest uppercase bg-ivory text-charcoal/70 border border-[#D6C2A1]/15 px-2.5 py-1 transition-colors duration-300 group-hover:bg-warmwhite group-hover:border-[#C9A227]/30"
                       >
                         {highlight}
                       </span>
@@ -162,7 +162,7 @@ export default function BrandShowcase() {
                     {brand.highlights.map((highlight, idx) => (
                       <span
                         key={idx}
-                        className="text-[8px] font-mono tracking-widest uppercase bg-[#F8F5F0] text-charcoal/70 border border-[#D6C2A1]/15 px-2.5 py-1 transition-colors duration-300 group-hover:bg-white group-hover:border-[#C9A227]/30"
+                        className="text-[8px] font-mono tracking-widest uppercase bg-ivory text-charcoal/70 border border-[#D6C2A1]/15 px-2.5 py-1 transition-colors duration-300 group-hover:bg-warmwhite group-hover:border-[#C9A227]/30"
                       >
                         {highlight}
                       </span>
