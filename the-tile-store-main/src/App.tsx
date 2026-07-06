@@ -184,8 +184,11 @@ export default function App() {
         setCurrentPage('calculator');
         window.scrollTo(0, 0);
       } else if (hash === '#/collections') {
-        setCurrentPage('collections');
-        window.scrollTo(0, 0);
+        setCurrentPage('home');
+        setTimeout(() => {
+          const el = document.getElementById('collections');
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
       } else {
         setCurrentPage('home');
         const sectionMapping: Record<string, string> = {
