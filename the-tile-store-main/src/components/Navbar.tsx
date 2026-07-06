@@ -44,9 +44,9 @@ export default function Navbar({
     { label: 'Home', hash: '#/' },
     { label: 'Collections', hash: '#/collections' },
     { label: 'Visualizer', hash: '#/visualizer' },
-    { label: 'Calculator', hash: '#/calculator' },
     { label: 'Brands', hash: '#/brands' },
     { label: 'Projects', hash: '#/projects' },
+    { label: 'Calculator', hash: '#/calculator' },
     { label: 'Partners', hash: '#/partners' }
   ];
 
