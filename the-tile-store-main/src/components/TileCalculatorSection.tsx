@@ -234,7 +234,7 @@ export default function TileCalculatorSection() {
                     type="button"
                     onClick={() => setUnit('feet')}
                     className={`px-3 py-1 font-sans text-[9px] uppercase tracking-wider cursor-pointer ${
-                      unit === 'feet' ? 'bg-charcoal text-warmwhite font-semibold' : 'bg-white text-charcoal/60'
+                      unit === 'feet' ? 'bg-gold-500 text-charcoal font-semibold' : 'bg-white text-charcoal/60'
                     }`}
                   >
                     Feet (ft)
@@ -243,7 +243,7 @@ export default function TileCalculatorSection() {
                     type="button"
                     onClick={() => setUnit('meters')}
                     className={`px-3 py-1 font-sans text-[9px] uppercase tracking-wider cursor-pointer ${
-                      unit === 'meters' ? 'bg-charcoal text-warmwhite font-semibold' : 'bg-white text-charcoal/60'
+                      unit === 'meters' ? 'bg-gold-500 text-charcoal font-semibold' : 'bg-white text-charcoal/60'
                     }`}
                   >
                     Meters (m)

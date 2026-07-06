@@ -82,7 +82,7 @@ export default function ProjectGallery() {
                   onClick={() => setActiveRoom(room)}
                   className={`px-5 py-2.5 rounded-none font-sans text-[10px] sm:text-xs tracking-widest uppercase transition-all duration-300 border cursor-pointer whitespace-nowrap ${
                     activeRoom === room
-                      ? 'bg-charcoal border-charcoal text-warmwhite font-medium shadow-md'
+                      ? 'bg-gold-500 border-gold-500 text-charcoal font-medium shadow-md'
                       : 'bg-white border-charcoal/5 text-charcoal/60 hover:border-gold-300 hover:text-charcoal'
                   }`}
                   id={`project-room-filter-${room.replace(/\s+/g, '-').toLowerCase()}`}

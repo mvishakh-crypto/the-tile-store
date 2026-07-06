@@ -479,7 +479,7 @@ export default function TileCollections({
                   onClick={() => setActiveCategory(cat.id)}
                   className={`px-5 py-2.5 rounded-none font-sans text-[10px] sm:text-xs tracking-widest uppercase transition-all duration-300 border cursor-pointer whitespace-nowrap ${
                     activeCategory === cat.id
-                      ? 'bg-charcoal border-charcoal text-warmwhite font-semibold shadow-md'
+                      ? 'bg-gold-500 border-gold-500 text-charcoal font-semibold shadow-md'
                       : 'bg-white/70 border-charcoal/5 text-charcoal/60 hover:border-gold-300 hover:text-charcoal'
                   }`}
                 >
@@ -648,7 +648,7 @@ export default function TileCollections({
                   onClick={() => setCurrentPage(pageNumber)}
                   className={`w-9 h-9 flex items-center justify-center border transition-all duration-300 cursor-pointer ${
                     currentPage === pageNumber
-                      ? 'bg-charcoal border-charcoal text-warmwhite font-bold shadow-sm'
+                      ? 'bg-gold-500 border-gold-500 text-charcoal font-bold shadow-sm'
                       : 'bg-white border-charcoal/5 text-charcoal/60 hover:border-gold-400 hover:text-charcoal'
                   }`}
                 >
