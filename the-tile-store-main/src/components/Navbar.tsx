@@ -87,12 +87,12 @@ export default function Navbar({
   return (
     <>
       <motion.header
-        initial={{ y: '-100%' }}
-        animate={{ y: isHidden ? '-100%' : 0 }}
+        initial={{ y: -120, opacity: 0 }}
+        animate={{ y: isHidden ? -120 : 0, opacity: isHidden ? 0 : 1 }}
         transition={{ duration: 0.38, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className={`fixed top-0 left-0 right-0 z-50 relative transition-all duration-500 px-6 md:px-12 py-4 ${
-          scrolled 
-            ? 'bg-warmwhite/75 backdrop-blur-xl border-b border-charcoal/5 shadow-sm py-3' 
+        className={`fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color,box-shadow,backdrop-filter] duration-500 px-6 md:px-12 py-4 ${
+          scrolled
+            ? 'bg-warmwhite/75 backdrop-blur-xl border-b border-charcoal/5 shadow-sm py-3'
             : 'bg-transparent py-6'
         }`}
         id="navbar-header"
