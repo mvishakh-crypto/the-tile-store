@@ -30,13 +30,17 @@
 }
 
 /* Intentionally dark sections stay dark in dark mode.
-   bg-charcoal is pinned to dark, but warmwhite/white tokens become dark
-   globally in .dark — so we restore their light values here so that
-   text-warmwhite and text-white remain visible inside charcoal sections. */
+   --color-warmwhite and --color-white are overridden DIRECTLY (not via the
+   --bg-card chain) because that chain runs through @layer theme which can
+   interfere with inheritance resolution. Setting color: directly ensures the
+   h2 heading with no text class also inherits the correct light value. */
 .dark .bg-charcoal {
   background-color: #1B1B1B;
   --bg-card: #FCFBF8;
   --bg-pure: #FFFFFF;
+  --color-warmwhite: #FCFBF8;
+  --color-white: #FFFFFF;
+  color: #FCFBF8;
 }
 
 /* bg-charcoal/X opacity variants: in dark mode --color-charcoal becomes
