@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Menu, X, ArrowRight, ShieldCheck, Search, Heart, BookOpen, Briefcase, ShoppingBag, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -30,15 +30,29 @@ export default function Navbar({
   onToggleDarkMode
 }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 40);
+      const currentY = window.scrollY;
+      const prev = lastScrollY.current;
+
+      if (currentY < 80) {
+        setIsHidden(false);
+      } else if (currentY > prev + 6 && !mobileMenuOpen) {
+        setIsHidden(true);
+      } else if (currentY < prev - 6) {
+        setIsHidden(false);
+      }
+
+      setScrolled(currentY > 40);
+      lastScrollY.current = currentY;
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [mobileMenuOpen]);
 
   const navItems = [
     { label: 'Home', hash: '#/' },
@@ -73,9 +87,9 @@ export default function Navbar({
   return (
     <>
       <motion.header
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        initial={{ y: '-100%' }}
+        animate={{ y: isHidden ? '-100%' : 0 }}
+        transition={{ duration: 0.38, ease: [0.25, 0.46, 0.45, 0.94] }}
         className={`fixed top-0 left-0 right-0 z-50 relative transition-all duration-500 px-6 md:px-12 py-4 ${
           scrolled 
             ? 'bg-warmwhite/75 backdrop-blur-xl border-b border-charcoal/5 shadow-sm py-3' 
