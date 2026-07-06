@@ -24,6 +24,9 @@
   --border-muted: rgba(234, 228, 219, 0.08);
   --glass-bg: rgba(23, 23, 23, 0.88);
   --glass-border: rgba(234, 228, 219, 0.07);
+  /* gold-50 hover highlight: in dark mode use a very subtle dark gold tint
+     instead of the light #fbf8ef — keeps button labels visible on hover */
+  --color-gold-50: rgba(201, 162, 39, 0.10);
 }
 
 /* Intentionally dark sections stay dark in dark mode.
@@ -34,6 +37,26 @@
   background-color: #1B1B1B;
   --bg-card: #FCFBF8;
   --bg-pure: #FFFFFF;
+}
+
+/* bg-charcoal/X opacity variants: in dark mode --color-charcoal becomes
+   #eae4db (light), so bg-charcoal/80 etc. become light cream overlays.
+   Pin them back to the original dark charcoal value at every opacity. */
+.dark .bg-charcoal\/5  { background-color: rgba(27, 27, 27, 0.05); }
+.dark .bg-charcoal\/10 { background-color: rgba(27, 27, 27, 0.10); }
+.dark .bg-charcoal\/30 { background-color: rgba(27, 27, 27, 0.30); }
+.dark .bg-charcoal\/40 { background-color: rgba(27, 27, 27, 0.40); }
+.dark .bg-charcoal\/50 { background-color: rgba(27, 27, 27, 0.50); }
+.dark .bg-charcoal\/60 { background-color: rgba(27, 27, 27, 0.60); }
+.dark .bg-charcoal\/70 { background-color: rgba(27, 27, 27, 0.70); }
+.dark .bg-charcoal\/80 { background-color: rgba(27, 27, 27, 0.80); }
+.dark .bg-charcoal\/85 { background-color: rgba(27, 27, 27, 0.85); }
+.dark .bg-charcoal\/90 { background-color: rgba(27, 27, 27, 0.90); }
+
+/* Ensure select/input text is legible in dark mode regardless of browser default */
+.dark select,
+.dark input {
+  color: var(--text-primary);
 }
 
 @theme {
