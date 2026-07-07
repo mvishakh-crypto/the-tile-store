@@ -153,32 +153,7 @@ export default function CalculatorPage({ onBack }: CalculatorPageProps) {
   const r = calc();
 
   return (
-    <div className="min-h-screen bg-ivory" id="calculator-page">
-      {/* ── Page Header Bar ── */}
-      <div className="sticky top-0 z-40 bg-warmwhite/90 backdrop-blur-xl border-b border-charcoal/8 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 py-4 flex items-center justify-between">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-2 text-charcoal/60 hover:text-charcoal transition-colors cursor-pointer group"
-          >
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            <span className="font-mono text-[10px] tracking-widest uppercase">Back to Home</span>
-          </button>
-
-          <div className="flex flex-col items-center">
-            <span className="font-serif text-sm font-bold tracking-[0.25em] uppercase text-charcoal">The Tile Store</span>
-            <span className="font-mono text-[8px] tracking-[0.25em] uppercase text-charcoal/40">SURFACES & INTERIORS ARCHIVE</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Calculator className="w-4 h-4 text-gold-600" />
-            <span className="font-mono text-[10px] tracking-widest uppercase text-charcoal/50 hidden sm:block">
-              Tile Calculator
-            </span>
-          </div>
-        </div>
-      </div>
-
+    <div className="min-h-screen bg-ivory pt-24" id="calculator-page">
       {/* ── Hero Strip ── */}
       <div className="bg-charcoal py-12 md:py-16 border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
