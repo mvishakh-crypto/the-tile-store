@@ -37,19 +37,17 @@ export default function AdminLayout({
         />
       )}
 
-      {/* Sidebar Wrapper */}
-      <div className={`admin-sidebar ${mobileSidebarOpen ? 'open' : ''}`}>
-        <AdminSidebar
-          activeRoute={activeRoute}
-          onNavigate={(hash) => {
-            setMobileSidebarOpen(false);
-            onNavigate(hash);
-          }}
-          userEmail={userEmail}
-          pendingInquiries={pendingInquiries}
-          pendingBookings={pendingBookings}
-        />
-      </div>
+      <AdminSidebar
+        activeRoute={activeRoute}
+        onNavigate={(hash) => {
+          setMobileSidebarOpen(false);
+          onNavigate(hash);
+        }}
+        userEmail={userEmail}
+        pendingInquiries={pendingInquiries}
+        pendingBookings={pendingBookings}
+        isOpen={mobileSidebarOpen}
+      />
 
       {/* Main content viewport */}
       <div className="admin-main">
@@ -81,7 +79,7 @@ export default function AdminLayout({
             {mobileSidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
           <span style={{ color: 'white', fontWeight: 700, fontSize: '13px', letterSpacing: '1px' }}>
-            ATELIER ADMIN
+            ADMIN
           </span>
           <div style={{ width: '20px' }} />
         </div>

@@ -61,9 +61,10 @@ interface AdminSidebarProps {
   userEmail?: string;
   pendingInquiries?: number;
   pendingBookings?: number;
+  isOpen?: boolean;
 }
 
-export default function AdminSidebar({ activeRoute, onNavigate, userEmail, pendingInquiries, pendingBookings }: AdminSidebarProps) {
+export default function AdminSidebar({ activeRoute, onNavigate, userEmail, pendingInquiries, pendingBookings, isOpen }: AdminSidebarProps) {
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   const handleSignOut = async () => {
@@ -81,7 +82,7 @@ export default function AdminSidebar({ activeRoute, onNavigate, userEmail, pendi
   };
 
   return (
-    <aside className="admin-sidebar">
+    <aside className={`admin-sidebar ${isOpen ? 'open' : ''}`}>
       {/* Logo */}
       <div className="admin-sidebar-logo" style={{ cursor: 'pointer' }} onClick={() => onNavigate('#/admin/dashboard')}>
         <div className="admin-sidebar-logo-icon">
