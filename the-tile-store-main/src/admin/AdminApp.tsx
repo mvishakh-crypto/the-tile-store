@@ -19,10 +19,7 @@ import SettingsPage from './pages/SettingsPage';
 
 export default function AdminApp() {
   const { user, isLoading: authLoading, isAuthenticated } = useSupabaseAuth();
-  const [staticLoggedIn, setStaticLoggedIn] = useState(
-    () => localStorage.getItem('sim-admin-session') === 'true'
-  );
-  
+
   // Router hash parsing
   const [adminRoute, setAdminRoute] = useState('dashboard');
   const [productIdParam, setProductIdParam] = useState<string | null>(null);
@@ -82,21 +79,14 @@ export default function AdminApp() {
       clearInterval(interval);
       window.removeEventListener('storage', handleStorage);
     };
-  }, [isAuthenticated, staticLoggedIn]);
+  }, [isAuthenticated]);
 
   const handleNavigate = (hash: string) => {
     window.location.hash = hash;
   };
 
-  const handleStaticLoginSuccess = () => {
-    setStaticLoggedIn(true);
+  const handleLoginSuccess = () => {
     window.location.hash = '#/admin/dashboard';
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('sim-admin-session');
-    setStaticLoggedIn(false);
-    window.location.hash = '#/';
   };
 
   if (authLoading) {
@@ -107,10 +97,9 @@ export default function AdminApp() {
     );
   }
 
-  // Gates control access
-  const isUserAuthenticated = isAuthenticated || staticLoggedIn;
-  if (!isUserAuthenticated) {
-    return <AdminLogin onLoginSuccess={handleStaticLoginSuccess} />;
+  // Gate controls access
+  if (!isAuthenticated) {
+    return <AdminLogin onLoginSuccess={handleLoginSuccess} />;
   }
 
   const userEmail = user?.email || 'admin@thetilestore.com';

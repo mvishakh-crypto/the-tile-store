@@ -81,14 +81,7 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
     setMessage(null);
 
     if (!isSupabaseConfigured) {
-      // Offline/fallback simulated admin login
-      if (email.toLowerCase().includes('admin') && password === 'Admin@tile') {
-        clearLockout();
-        localStorage.setItem('sim-admin-session', 'true');
-        onLoginSuccess();
-      } else {
-        handleFailedAttempt();
-      }
+      setError('Authentication is not configured. Contact an administrator.');
       setLoading(false);
       return;
     }
