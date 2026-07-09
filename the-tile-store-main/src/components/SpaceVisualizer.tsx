@@ -3,7 +3,7 @@ import { spaceOptions } from '../data/tiles';
 import { useProducts } from '../hooks/useProducts';
 import { TileProduct, SpaceOption } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import { RefreshCw, Layers, Sun, Moon, Sparkles, Sliders, Info, Download, ShieldCheck, Upload, Camera } from 'lucide-react';
+import { RefreshCw, Layers, Sun, Moon, Sparkles, Sliders, Info, Download, ShieldCheck, Upload, Camera, X } from 'lucide-react';
 import ProgressiveImage from './ProgressiveImage';
 
 interface SpaceVisualizerProps {
@@ -123,7 +123,16 @@ export default function SpaceVisualizer({ selectedTileFromParent, clearParentTil
     }
   };
 
-
+  const handleCancelCustomImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCustomImage(null);
+    setIsCustomActive(false);
+    setIsScanning(false);
+    setScanProgress(0);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   return (
     <section 
@@ -433,6 +442,15 @@ export default function SpaceVisualizer({ selectedTileFromParent, clearParentTil
                   {customImage ? (
                     <>
                       <img src={customImage} alt="Preview Upload" className="absolute inset-0 w-full h-full object-cover brightness-[0.4]" />
+                      <button
+                        type="button"
+                        onClick={handleCancelCustomImage}
+                        className="absolute top-1.5 right-1.5 z-20 w-6 h-6 flex items-center justify-center bg-charcoal/80 hover:bg-charcoal text-warmwhite rounded-full transition-colors cursor-pointer"
+                        aria-label="Cancel custom photo"
+                        title="Cancel custom photo"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
                       <div className="relative z-10 flex flex-col items-center justify-center text-center">
                         <RefreshCw className="w-5 h-5 text-gold-400 mb-1" />
                         <span className="font-mono text-[9px] tracking-widest text-warmwhite uppercase font-bold">Replace Photo</span>
