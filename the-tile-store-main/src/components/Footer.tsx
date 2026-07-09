@@ -128,20 +128,20 @@ export default function Footer({ onNavigate }: FooterProps) {
             {/* Social handles with minimal gold borders */}
             <div className="flex items-center gap-3.5" id="footer-social-handles">
               <span className="font-mono text-[9px] tracking-widest text-white/40 uppercase">FOLLOW US:</span>
-              <a 
-                href="https://instagram.com" 
-                target="_blank" 
-                rel="noreferrer" 
+              <a
+                href="https://www.instagram.com/the.tilestore.official/"
+                target="_blank"
+                rel="noreferrer"
                 className="p-2 border border-white/10 hover:border-gold-500 rounded-full text-gray-400 hover:text-gold-400 transition-all duration-300 cursor-pointer"
                 aria-label="Instagram Profile Link"
                 id="footer-ig-link"
               >
                 <Instagram className="w-3.5 h-3.5" />
               </a>
-              <a 
-                href="https://facebook.com" 
-                target="_blank" 
-                rel="noreferrer" 
+              <a
+                href="https://www.facebook.com/share/14gwwRM3WpF/"
+                target="_blank"
+                rel="noreferrer"
                 className="p-2 border border-white/10 hover:border-gold-500 rounded-full text-gray-400 hover:text-gold-400 transition-all duration-300 cursor-pointer"
                 aria-label="Facebook Profile Link"
                 id="footer-fb-link"

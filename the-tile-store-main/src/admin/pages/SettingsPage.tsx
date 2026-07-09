@@ -15,7 +15,7 @@ export default function SettingsPage() {
   const [whatsappPhone, setWhatsappPhone] = useState('919876543210');
   const [whatsappText, setWhatsappText] = useState('Hello, I would like to inquire about premium surfaces for my architecture project.');
 
-  const [instagram, setInstagram] = useState('https://instagram.com/thetilestore');
+  const [instagram, setInstagram] = useState('https://www.instagram.com/the.tilestore.official/');
   const [linkedin, setLinkedin] = useState('https://linkedin.com/company/thetilestore');
   const [pinterest, setPinterest] = useState('https://pinterest.com/thetilestore');
 

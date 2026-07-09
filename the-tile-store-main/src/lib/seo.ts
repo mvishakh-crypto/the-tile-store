@@ -147,8 +147,8 @@ export const SEO_CONFIGS = {
         },
       ],
       sameAs: [
-        'https://www.instagram.com/thetilestore',
-        'https://www.facebook.com/thetilestore',
+        'https://www.instagram.com/the.tilestore.official/',
+        'https://www.facebook.com/share/14gwwRM3WpF/',
       ],
     },
   }),

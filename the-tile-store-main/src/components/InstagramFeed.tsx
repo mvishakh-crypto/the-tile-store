@@ -106,7 +106,7 @@ export default function InstagramFeed() {
             <div className="flex items-center gap-3 mb-4">
               <div className="h-[1px] w-10 bg-gold-500" />
               <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-gold-500 font-semibold">
-                @THETILESTORE
+                @THE.TILESTORE.OFFICIAL
               </span>
             </div>
             <h2 className="font-serif text-3xl md:text-5xl font-bold text-warmwhite tracking-wide">
@@ -118,7 +118,7 @@ export default function InstagramFeed() {
           </div>
 
           <motion.a
-            href="https://instagram.com"
+            href="https://www.instagram.com/the.tilestore.official/"
             target="_blank"
             rel="noopener noreferrer"
             className="group flex items-center gap-3 px-6 py-3 border border-warmwhite/15 hover:border-gold-500 transition-all duration-300"
