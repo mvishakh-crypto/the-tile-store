@@ -102,6 +102,18 @@ export default function TileCollections({
     setCurrentPage(1);
   }, [activeCategory, selectedFilters, sortBy, searchQuery]);
 
+  // Scroll back to the top of this section on page change — otherwise the
+  // browser stays at the pagination controls' scroll position (near the
+  // bottom of the previous page's grid) and the new page renders offscreen.
+  const isFirstPageRender = useRef(true);
+  useEffect(() => {
+    if (isFirstPageRender.current) {
+      isFirstPageRender.current = false;
+      return;
+    }
+    document.getElementById('collections')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [currentPage]);
+
   // Synchronize with search selection — navigate directly to product page
   useEffect(() => {
     if (externalSelectedTile) {
