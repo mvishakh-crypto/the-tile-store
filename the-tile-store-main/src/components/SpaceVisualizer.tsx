@@ -350,10 +350,23 @@ export default function SpaceVisualizer({ selectedTileFromParent, clearParentTil
               </div>
 
               {/* Top left Active Room Flag */}
-              <div className="absolute top-4 left-4 z-20 bg-charcoal/85 px-3 py-1.5 border border-white/10" id="floor-space-label">
-                <span className="font-mono text-[10px] text-gold-400 tracking-widest uppercase">
-                  STUDIO SPACE: {isCustomActive ? 'CUSTOM UPLOAD' : activeSpace.name}
-                </span>
+              <div className="absolute top-4 left-4 z-20 flex items-center gap-2" id="floor-space-label">
+                <div className="bg-charcoal/85 px-3 py-1.5 border border-white/10">
+                  <span className="font-mono text-[10px] text-gold-400 tracking-widest uppercase">
+                    STUDIO SPACE: {isCustomActive ? 'CUSTOM UPLOAD' : activeSpace.name}
+                  </span>
+                </div>
+                {isCustomActive && (
+                  <button
+                    type="button"
+                    onClick={handleCancelCustomImage}
+                    className="flex items-center gap-1 bg-charcoal/85 hover:bg-charcoal px-2.5 py-1.5 border border-white/10 text-warmwhite transition-colors cursor-pointer"
+                    id="cancel-custom-photo-btn"
+                  >
+                    <X className="w-3 h-3" />
+                    <span className="font-mono text-[10px] tracking-widest uppercase">Cancel</span>
+                  </button>
+                )}
               </div>
             </div>
 
