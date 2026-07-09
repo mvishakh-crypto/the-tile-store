@@ -52,7 +52,7 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
     return () => clearInterval(id);
   }, []);
 
-  const handleFailedAttempt = useCallback(() => {
+  const handleFailedAttempt = useCallback((reason?: string) => {
     const attempts = getAttempts() + 1;
     setAttempts(attempts);
     if (attempts >= MAX_ATTEMPTS) {
@@ -61,7 +61,7 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
       setLockoutRemaining(LOCKOUT_SECONDS);
       setError(`Too many failed attempts. Access locked for ${LOCKOUT_SECONDS} seconds.`);
     } else {
-      setError(`Invalid credentials. ${MAX_ATTEMPTS - attempts} attempt(s) remaining before lockout.`);
+      setError(`${reason || 'Invalid credentials.'} (${MAX_ATTEMPTS - attempts} attempt(s) remaining before lockout.)`);
     }
   }, []);
 
@@ -108,8 +108,11 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
         .eq('id', data.user?.id)
         .single();
 
-      if (profileError || !profile) {
-        throw new Error('Could not verify profile permissions.');
+      if (profileError) {
+        throw new Error(`Could not verify profile permissions: ${profileError.message}`);
+      }
+      if (!profile) {
+        throw new Error('Could not verify profile permissions: no profile row found for this account.');
       }
 
       if ((profile as any).role !== 'admin') {
@@ -120,7 +123,7 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
       clearLockout();
       onLoginSuccess();
     } catch (err: any) {
-      handleFailedAttempt();
+      handleFailedAttempt(err?.message);
     } finally {
       setLoading(false);
     }
