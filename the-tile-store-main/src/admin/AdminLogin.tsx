@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { Layers, ArrowRight, ShieldAlert, KeyRound, Mail, Lock } from 'lucide-react';
+import { Layers, ArrowRight, ShieldAlert, KeyRound, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 
 const ATTEMPTS_KEY = 'admin-login-attempts';
 const LOCKOUT_KEY = 'admin-login-lockout';
@@ -36,6 +36,7 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [lockoutRemaining, setLockoutRemaining] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Lockout countdown timer
   useEffect(() => {
@@ -210,14 +211,28 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
               <div style={{ position: 'relative' }}>
                 <KeyRound size={15} style={{ position: 'absolute', left: '10px', top: '10px', color: 'var(--admin-text-tertiary)' }} />
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   className="admin-input"
-                  style={{ paddingLeft: '34px' }}
+                  style={{ paddingLeft: '34px', paddingRight: '34px' }}
                   placeholder="••••••••"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  tabIndex={-1}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  style={{
+                    position: 'absolute', right: '8px', top: '8px',
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    color: 'var(--admin-text-tertiary)', padding: '2px',
+                    display: 'flex', alignItems: 'center',
+                  }}
+                >
+                  {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                </button>
               </div>
             </div>
           )}
