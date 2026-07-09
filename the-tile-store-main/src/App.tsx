@@ -166,6 +166,15 @@ export default function App() {
 
   // Hash-based routing controller
   useEffect(() => {
+    // This is a single-document SPA where every hash change pushes a new
+    // history entry. The browser's native scroll restoration replays a
+    // stored offset for previously-visited hash entries (e.g. re-visiting
+    // "#/"), which races with and overrides our own explicit scrollTo calls
+    // below. Scroll position is fully managed by this router instead.
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+
     const handleHashChange = () => {
       const hash = window.location.hash || '#/';
       setCurrentHash(hash);
@@ -189,6 +198,9 @@ export default function App() {
           const el = document.getElementById('collections');
           if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 150);
+      } else if (hash === '#/collections/all') {
+        setCurrentPage('collections');
+        window.scrollTo(0, 0);
       } else {
         setCurrentPage('home');
         const sectionMapping: Record<string, string> = {
@@ -205,6 +217,10 @@ export default function App() {
               targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
           }, 150);
+        } else {
+          // Plain "#/" (or unrecognized hash) — land at the top of the
+          // home page instead of wherever the previous page was scrolled to.
+          window.scrollTo(0, 0);
         }
       }
     };
@@ -222,7 +238,7 @@ export default function App() {
 
     if (currentHash === '#/' || currentHash === '') {
       applySEO(SEO_CONFIGS.home());
-    } else if (currentHash === '#/collections') {
+    } else if (currentHash === '#/collections' || currentHash === '#/collections/all') {
       applySEO(SEO_CONFIGS.collections());
     } else if (currentHash.startsWith('#/product/')) {
       const id = currentHash.replace('#/product/', '');

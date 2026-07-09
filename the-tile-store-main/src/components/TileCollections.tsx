@@ -105,13 +105,14 @@ export default function TileCollections({
   // Scroll back to the top of this section on page change — otherwise the
   // browser stays at the pagination controls' scroll position (near the
   // bottom of the previous page's grid) and the new page renders offscreen.
-  const isFirstPageRender = useRef(true);
+  // Tracks the previous value (rather than a "ran once" flag) so this stays
+  // correct under StrictMode's dev-only double effect invocation.
+  const prevPageRef = useRef(currentPage);
   useEffect(() => {
-    if (isFirstPageRender.current) {
-      isFirstPageRender.current = false;
-      return;
+    if (prevPageRef.current !== currentPage) {
+      document.getElementById('collections')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-    document.getElementById('collections')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    prevPageRef.current = currentPage;
   }, [currentPage]);
 
   // Synchronize with search selection — navigate directly to product page
@@ -612,7 +613,7 @@ export default function TileCollections({
                 </button>
 
                 <button
-                  onClick={() => onNavigate?.('#/collections')}
+                  onClick={() => onNavigate?.('#/collections/all')}
                   className="flex items-center gap-2 px-5 py-2.5 bg-charcoal border border-charcoal text-warmwhite hover:bg-gold-500 hover:border-gold-500 hover:text-charcoal text-xs font-semibold tracking-widest uppercase transition-all duration-300 justify-center cursor-pointer"
                 >
                   <LayoutGrid className="w-4 h-4" />
