@@ -4,7 +4,7 @@ import { Layers, ArrowRight, ShieldAlert, KeyRound, Mail, Lock } from 'lucide-re
 
 const ATTEMPTS_KEY = 'admin-login-attempts';
 const LOCKOUT_KEY = 'admin-login-lockout';
-const MAX_ATTEMPTS = 2;
+const MAX_ATTEMPTS = 5;
 const LOCKOUT_SECONDS = 60;
 
 function getAttempts(): number {
