@@ -83,30 +83,25 @@ export default function Hero({ onExploreClick, onBookingClick }: HeroProps) {
       className="relative h-screen w-full overflow-hidden bg-charcoal text-warmwhite select-none"
       id="home"
     >
-      {/* Background Slides with slow scale zoom effect */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={current}
-          initial={{ opacity: 0, scale: 1.05 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.5, ease: 'easeOut' }}
-          className="absolute inset-0 w-full h-full"
-          id={`hero-slide-${current}`}
-        >
-          {/* Backdrop darkened overlay */}
-          <div className="absolute inset-x-0 inset-y-0 bg-gradient-to-r from-charcoal/80 via-charcoal/50 to-transparent z-10" />
-          <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-ivory via-ivory/20 to-transparent z-10" />
-          
-          <img
-            src={slides[current].image}
-            alt={slides[current].title}
-            className="w-full h-full object-cover object-center scale-100"
-            referrerPolicy="no-referrer"
-            id={`hero-bg-img-${current}`}
-          />
-        </motion.div>
-      </AnimatePresence>
+      {/* Persistent Background Video — plays continuously behind the
+          changing slide text/taglines below; not tied to `current` so it
+          never restarts or flickers when slides change. */}
+      <div className="absolute inset-0 w-full h-full" id="hero-bg-video-wrap">
+        {/* Backdrop darkened overlay */}
+        <div className="absolute inset-x-0 inset-y-0 bg-gradient-to-r from-charcoal/80 via-charcoal/50 to-transparent z-10" />
+        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-ivory via-ivory/20 to-transparent z-10" />
+
+        <video
+          className="w-full h-full object-cover object-center"
+          src="/hero-video.mp4"
+          poster={slides[0].image}
+          autoPlay
+          muted
+          loop
+          playsInline
+          id="hero-bg-video"
+        />
+      </div>
 
       {/* Floating Decorative Fine Mesh Background Detail */}
       <div className="absolute inset-0 pointer-events-none z-20 mix-blend-overlay opacity-15 bg-[radial-gradient(#C9A227_1px,transparent_1px)] [background-size:16px_16px]" />
