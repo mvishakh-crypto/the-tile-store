@@ -12,7 +12,7 @@ export default function SettingsPage() {
   const [contactEmail, setContactEmail] = useState('concierge@thetilestore.com');
   const [contactPhone, setContactPhone] = useState('+91 98765 43210');
   const [address, setAddress] = useState('Atelier Mansion, MG Road, Bangalore, India');
-  const [whatsappPhone, setWhatsappPhone] = useState('919876543210');
+  const [whatsappPhone, setWhatsappPhone] = useState('919092599111');
   const [whatsappText, setWhatsappText] = useState('Hello, I would like to inquire about premium surfaces for my architecture project.');
 
   const [instagram, setInstagram] = useState('https://www.instagram.com/the.tilestore.official/');
@@ -110,7 +110,7 @@ export default function SettingsPage() {
                   <input
                     type="text"
                     className="admin-input"
-                    placeholder="e.g. 919876543210"
+                    placeholder="e.g. 919092599111"
                     value={whatsappPhone}
                     onChange={(e) => setWhatsappPhone(e.target.value)}
                     required

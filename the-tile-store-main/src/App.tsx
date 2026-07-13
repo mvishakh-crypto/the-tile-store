@@ -10,6 +10,7 @@ import Testimonials from './components/Testimonials';
 import ConsultationBooking from './components/ConsultationBooking';
 import Footer from './components/Footer';
 import GlobalSearch from './components/GlobalSearch';
+import WhatsAppIcon from './components/WhatsAppIcon';
 import { TileProduct } from './types';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowUp } from 'lucide-react';
@@ -342,7 +343,7 @@ export default function App() {
 
   const handleWhatsAppInquiry = () => {
     const text = encodeURIComponent("Hello, I would like to inquire about premium surfaces for my architecture project.");
-    window.open(`https://wa.me/919876543210?text=${text}`, '_blank');
+    window.open(`https://wa.me/919092599111?text=${text}`, '_blank');
   };
 
   // Inquiry Cart Handlers — delegated to enterprise hooks
@@ -574,8 +575,7 @@ export default function App() {
               <span className="absolute right-14 bg-charcoal text-[9px] tracking-widest text-warmwhite font-mono uppercase px-2.5 py-1 border border-white/10 rounded-none whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
                 Atelier WhatsApp
               </span>
-              {/* Minimal Elegant chat glyph */}
-              <span className="font-mono text-xs font-bold font-sans">WA</span>
+              <WhatsAppIcon className="w-5 h-5" />
             </button>
           </div>
 

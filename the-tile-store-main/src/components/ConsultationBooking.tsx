@@ -73,7 +73,7 @@ export default function ConsultationBooking() {
 
   const handleWhatsApp = () => {
     const text = encodeURIComponent(`Hello Tile Store Team, I am looking to schedule a private tour of your showroom in Kochi. Interest: ${formData.interestType}.`);
-    window.open(`https://wa.me/919544711111?text=${text}`, '_blank');
+    window.open(`https://wa.me/919092599111?text=${text}`, '_blank');
   };
 
   const handleReset = () => {

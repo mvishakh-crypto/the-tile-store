@@ -72,7 +72,7 @@ export default function InquiryCartDrawer({
 
   const handleWhatsAppSubmit = () => {
     const msg = encodeURIComponent(generateInquiryMessage());
-    window.open(`https://wa.me/919876543210?text=${msg}`, '_blank');
+    window.open(`https://wa.me/919092599111?text=${msg}`, '_blank');
   };
 
   const handleEmailSubmit = () => {

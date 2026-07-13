@@ -124,7 +124,7 @@ export const SEO_CONFIGS = {
       description:
         'Premium luxury tiles, marble slabs, and designer surfaces for architects and interior designers.',
       url: SITE_URL,
-      telephone: '+919876543210',
+      telephone: '+919092599111',
       priceRange: '₹₹₹',
       address: {
         '@type': 'PostalAddress',
