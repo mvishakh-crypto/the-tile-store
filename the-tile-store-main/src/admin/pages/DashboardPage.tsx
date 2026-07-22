@@ -4,7 +4,8 @@ import StatCard from '../components/StatCard';
 import DataTable from '../components/DataTable';
 import StatusBadge from '../components/StatusBadge';
 import { adminGetAnalyticsSummary, adminGetInquiries } from '../../services/adminService';
-import { Package, MessageSquare, Calendar, Eye, AlertCircle } from 'lucide-react';
+import { getLoginCount } from '../AdminLogin';
+import { Package, MessageSquare, Calendar, Eye, AlertCircle, LogIn } from 'lucide-react';
 
 interface DashboardPageProps {
   onNavigate: (hash: string) => void;
@@ -15,6 +16,7 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
   const [recentInquiries, setRecentInquiries] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loginCount] = useState(() => getLoginCount());
 
   const fetchDashboardData = async () => {
     setLoading(true);
@@ -98,6 +100,13 @@ export default function DashboardPage({ onNavigate }: DashboardPageProps) {
             iconBgColor="var(--admin-purple-bg)"
             iconColor="var(--admin-purple)"
             loading={loading}
+          />
+          <StatCard
+            title="Login Count"
+            value={loginCount}
+            icon={<LogIn size={20} />}
+            iconBgColor="var(--admin-info-bg)"
+            iconColor="var(--admin-info)"
           />
         </section>
 
