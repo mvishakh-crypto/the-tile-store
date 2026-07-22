@@ -21,6 +21,16 @@ const DEFAULT_CONFIG: SEOConfig = {
   type: 'website',
 };
 
+/**
+ * Apply the admin-edited "global" SEO override (see seo_settings
+ * table / admin SEO page) on top of the hardcoded fallback defaults.
+ * Mutates DEFAULT_CONFIG in place — call once after fetching
+ * settings from Supabase, before any applySEO() calls.
+ */
+export function setSEODefaults(overrides: Partial<SEOConfig>): void {
+  Object.assign(DEFAULT_CONFIG, overrides);
+}
+
 const SITE_NAME = 'The Tile Store';
 const SITE_URL = typeof window !== 'undefined' ? window.location.origin : 'https://thetilestore.com';
 const TWITTER_HANDLE = '@thetilestore';

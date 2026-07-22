@@ -14,7 +14,8 @@ import WhatsAppIcon from './components/WhatsAppIcon';
 import { TileProduct } from './types';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowUp } from 'lucide-react';
-import { applySEO, SEO_CONFIGS } from './lib/seo';
+import { applySEO, SEO_CONFIGS, setSEODefaults, SEOConfig } from './lib/seo';
+import { getAllSEOSettings, SEOPageSettings } from './services/seoService';
 
 // Sub-module Component Imports
 import WishlistDrawer from './components/WishlistDrawer';
@@ -54,6 +55,33 @@ export default function App() {
 
   const [currentHash, setCurrentHash] = useState<string>(() => window.location.hash || '#/');
   const [currentProductId, setCurrentProductId] = useState<string>('');
+
+  // Admin-editable SEO overrides (seo_settings table) — fetched once
+  // on mount and merged over the hardcoded SEO_CONFIGS defaults.
+  const [seoOverrides, setSeoOverrides] = useState<Record<string, SEOPageSettings>>({});
+  useEffect(() => {
+    getAllSEOSettings().then((settings) => {
+      if (settings.global) {
+        setSEODefaults({
+          title: settings.global.title,
+          description: settings.global.description,
+          image: settings.global.ogImageUrl || undefined,
+        });
+      }
+      setSeoOverrides(settings);
+    });
+  }, []);
+
+  const withSEOOverride = (base: SEOConfig, pageKey: string): SEOConfig => {
+    const o = seoOverrides[pageKey];
+    if (!o) return base;
+    return {
+      ...base,
+      title: o.title || base.title,
+      description: o.description || base.description,
+      image: o.ogImageUrl || base.image,
+    };
+  };
 
   // Global search open & external tile selection state
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
@@ -238,9 +266,9 @@ export default function App() {
     trackPageView(currentHash);
 
     if (currentHash === '#/' || currentHash === '') {
-      applySEO(SEO_CONFIGS.home());
+      applySEO(withSEOOverride(SEO_CONFIGS.home(), 'home'));
     } else if (currentHash === '#/collections' || currentHash === '#/collections/all') {
-      applySEO(SEO_CONFIGS.collections());
+      applySEO(withSEOOverride(SEO_CONFIGS.collections(), 'collections'));
     } else if (currentHash.startsWith('#/product/')) {
       const id = currentHash.replace('#/product/', '');
       getProductById(id).then(tile => {
@@ -261,13 +289,13 @@ export default function App() {
         }
       });
     } else if (currentHash === '#/partners') {
-      applySEO(SEO_CONFIGS.partners());
+      applySEO(withSEOOverride(SEO_CONFIGS.partners(), 'partners'));
     } else if (currentHash === '#/calculator') {
-      applySEO(SEO_CONFIGS.calculator());
+      applySEO(withSEOOverride(SEO_CONFIGS.calculator(), 'calculator'));
     } else {
-      applySEO(SEO_CONFIGS.home());
+      applySEO(withSEOOverride(SEO_CONFIGS.home(), 'home'));
     }
-  }, [currentHash]);
+  }, [currentHash, seoOverrides]);
 
   // Section highlight tracker scrollspy
   useEffect(() => {

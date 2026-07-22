@@ -528,6 +528,47 @@ export async function adminGetAnalyticsSummary(): Promise<AnalyticsSummary> {
 }
 
 // ============================================================
+// VISITOR TRACKING
+// ============================================================
+
+export interface DailyVisits {
+  date: string;
+  visits: number;
+  unique_visitors: number;
+}
+
+export interface VisitStats {
+  totalVisits: number;
+  uniqueVisitors: number;
+  visitsToday: number;
+  daily: DailyVisits[];
+}
+
+/**
+ * Real visitor counts backed by the page_views table (see migration
+ * 009_page_views_and_seo_settings.sql) — not Vercel logs, which don't
+ * exist for this static SPA (no serverless functions handle page
+ * requests, so there is nothing for `vercel logs` to record).
+ * Returns all-zero stats gracefully if the migration hasn't been
+ * applied yet, rather than breaking the Analytics page.
+ */
+export async function adminGetVisitStats(daysBack = 30): Promise<VisitStats> {
+  const empty: VisitStats = { totalVisits: 0, uniqueVisitors: 0, visitsToday: 0, daily: [] };
+  if (!isSupabaseConfigured) return empty;
+
+  const { data, error } = await supabase.rpc('get_visit_stats', { days_back: daysBack });
+  if (error || !data || !data[0]) return empty;
+
+  const row = data[0];
+  return {
+    totalVisits: Number(row.total_visits || 0),
+    uniqueVisitors: Number(row.unique_visitors || 0),
+    visitsToday: Number(row.visits_today || 0),
+    daily: (row.daily as DailyVisits[]) || [],
+  };
+}
+
+// ============================================================
 // AI EMBEDDING MANAGEMENT
 // ============================================================
 

@@ -210,11 +210,11 @@ export function trackBlogView(blogId: string): void {
 }
 
 /**
- * Track page navigation for general analytics.
+ * Track page navigation for general analytics. Records a row in
+ * page_views (session_id + path) for the admin panel's visitor
+ * counter, in addition to the lightweight in-memory list.
  */
 export function trackPageView(page: string): void {
-  // Lightweight local tracking only — no DB write for page views
-  // Can be connected to Google Analytics or PostHog here
   if (typeof window !== 'undefined') {
     (window as Window & { _atelierAnalytics?: { pages: string[] } })._atelierAnalytics = {
       ...(window as Window & { _atelierAnalytics?: { pages: string[] } })._atelierAnalytics,
@@ -224,6 +224,16 @@ export function trackPageView(page: string): void {
       ],
     };
   }
+
+  if (!isSupabaseConfigured) return;
+
+  // Direct insert (not the batched queue) — a page view is a single,
+  // infrequent event we don't want lost if the tab closes before a
+  // batch flush fires.
+  void supabase.from('page_views').insert({
+    session_id: getSession(),
+    path: page,
+  });
 }
 
 /**

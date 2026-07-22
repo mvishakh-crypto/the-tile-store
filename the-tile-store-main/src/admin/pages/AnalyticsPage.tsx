@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import AdminHeader from '../components/AdminHeader';
 import StatCard from '../components/StatCard';
-import { adminGetAnalyticsSummary } from '../../services/adminService';
-import { BarChart, TrendingUp, MessageSquare, AlertCircle } from 'lucide-react';
+import { adminGetAnalyticsSummary, adminGetVisitStats, VisitStats } from '../../services/adminService';
+import { BarChart, TrendingUp, MessageSquare, AlertCircle, Users, Eye } from 'lucide-react';
 
 export default function AnalyticsPage() {
   const [stats, setStats] = useState<any>(null);
+  const [visitStats, setVisitStats] = useState<VisitStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -13,8 +14,12 @@ export default function AnalyticsPage() {
     setLoading(true);
     setError(null);
     try {
-      const summary = await adminGetAnalyticsSummary();
+      const [summary, visits] = await Promise.all([
+        adminGetAnalyticsSummary(),
+        adminGetVisitStats(30),
+      ]);
       setStats(summary);
+      setVisitStats(visits);
     } catch (err: any) {
       setError(err.message || 'Error occurred pulling analytics summary.');
     } finally {
@@ -40,8 +45,24 @@ export default function AnalyticsPage() {
 
         <div className="admin-stat-grid">
           <StatCard
-            title="Total Interactions"
-            value={stats?.totalViews ?? 0}
+            title="Total Site Visits"
+            value={visitStats?.totalVisits ?? 0}
+            icon={<Eye size={20} />}
+            iconBgColor="var(--admin-info-bg)"
+            iconColor="var(--admin-info)"
+            loading={loading}
+          />
+          <StatCard
+            title="Unique Visitors"
+            value={visitStats?.uniqueVisitors ?? 0}
+            icon={<Users size={20} />}
+            iconBgColor="var(--admin-success-bg)"
+            iconColor="var(--admin-success)"
+            loading={loading}
+          />
+          <StatCard
+            title="Visits Today"
+            value={visitStats?.visitsToday ?? 0}
             icon={<TrendingUp size={20} />}
             loading={loading}
           />
@@ -54,6 +75,62 @@ export default function AnalyticsPage() {
             trend={{ value: 'Last 7 days', direction: 'neutral' }}
             loading={loading}
           />
+        </div>
+
+        {/* Daily Visitor Trend */}
+        <div className="admin-card" style={{ marginTop: '24px' }}>
+          <div className="admin-card-header">
+            <div className="admin-card-title">Daily Visitor Trend</div>
+            <div className="admin-card-subtitle">Last 30 days · total visits vs. unique visitors</div>
+          </div>
+          <div className="admin-card-body">
+            {loading ? (
+              <div style={{ height: '120px', background: '#e5e7eb', borderRadius: '4px' }} className="animate-pulse" />
+            ) : !visitStats?.daily || visitStats.daily.length === 0 ? (
+              <div className="admin-empty" style={{ padding: '40px' }}>
+                <Eye className="admin-empty-icon" />
+                <div className="admin-empty-title font-sans">No visits recorded yet</div>
+                <div className="admin-empty-desc">Visitor counts start accumulating as soon as people browse the live site.</div>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px', height: '140px', overflowX: 'auto' }}>
+                {(() => {
+                  const maxVisits = Math.max(...visitStats.daily.map((d) => d.visits), 1);
+                  return visitStats.daily.map((d) => (
+                    <div
+                      key={d.date}
+                      title={`${d.date}: ${d.visits} visits, ${d.unique_visitors} unique`}
+                      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', flex: '0 0 auto', width: '22px' }}
+                    >
+                      <div style={{ position: 'relative', width: '14px', height: '110px', display: 'flex', alignItems: 'flex-end' }}>
+                        <div
+                          style={{
+                            width: '100%',
+                            height: `${Math.max((d.visits / maxVisits) * 100, 3)}%`,
+                            background: 'var(--admin-accent-light)',
+                            borderRadius: '2px 2px 0 0',
+                          }}
+                        />
+                        <div
+                          style={{
+                            position: 'absolute',
+                            bottom: 0,
+                            width: '100%',
+                            height: `${Math.max((d.unique_visitors / maxVisits) * 100, 3)}%`,
+                            background: 'var(--admin-accent)',
+                            borderRadius: '2px 2px 0 0',
+                          }}
+                        />
+                      </div>
+                      <span style={{ fontSize: '9px', color: 'var(--admin-text-tertiary)', writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+                        {d.date.slice(5)}
+                      </span>
+                    </div>
+                  ));
+                })()}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="admin-grid-2" style={{ marginTop: '24px' }}>
