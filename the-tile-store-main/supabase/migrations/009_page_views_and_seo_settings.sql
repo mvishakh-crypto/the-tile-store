@@ -1,4 +1,19 @@
 -- ============================================================
+-- is_admin() — defined here with CREATE OR REPLACE so this
+-- migration is self-contained regardless of whether an earlier
+-- migration already created it in this database.
+-- ============================================================
+CREATE OR REPLACE FUNCTION is_admin()
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM profiles
+    WHERE id = auth.uid() AND role = 'admin'
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- ============================================================
 -- PAGE VIEWS — lightweight visitor/session tracking for the
 -- admin-panel visitor counter (total visits, unique visitors,
 -- daily trend). Nothing tracked visits before this migration —
