@@ -43,6 +43,18 @@ export default function AnalyticsPage() {
           </div>
         )}
 
+        {!loading && visitStats && !visitStats.available && (
+          <div className="admin-alert warning" style={{ marginBottom: '16px' }}>
+            <AlertCircle size={16} />
+            <span>
+              Visitor tracking is set up but not yet reachable from the database
+              (a Supabase-side sync issue, not a bug here). The numbers below will
+              start populating automatically once that's resolved — no action
+              needed on this page.
+            </span>
+          </div>
+        )}
+
         <div className="admin-stat-grid">
           <StatCard
             title="Total Site Visits"
@@ -86,6 +98,12 @@ export default function AnalyticsPage() {
           <div className="admin-card-body">
             {loading ? (
               <div style={{ height: '120px', background: '#e5e7eb', borderRadius: '4px' }} className="animate-pulse" />
+            ) : visitStats && !visitStats.available ? (
+              <div className="admin-empty" style={{ padding: '40px' }}>
+                <Eye className="admin-empty-icon" />
+                <div className="admin-empty-title font-sans">Data sync pending</div>
+                <div className="admin-empty-desc">Visitor tracking is built and deployed, waiting on a Supabase-side sync — see the note above.</div>
+              </div>
             ) : !visitStats?.daily || visitStats.daily.length === 0 ? (
               <div className="admin-empty" style={{ padding: '40px' }}>
                 <Eye className="admin-empty-icon" />

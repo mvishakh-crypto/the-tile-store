@@ -542,6 +542,13 @@ export interface VisitStats {
   uniqueVisitors: number;
   visitsToday: number;
   daily: DailyVisits[];
+  /** false when the underlying page_views/get_visit_stats call itself
+   * failed (e.g. Supabase schema cache hasn't picked up the migration
+   * yet) — distinct from a successful call that legitimately returns
+   * zero visits, so the UI can tell "not wired up" apart from "no
+   * traffic yet". */
+  available: boolean;
+  unavailableReason?: string;
 }
 
 /**
@@ -549,15 +556,19 @@ export interface VisitStats {
  * 009_page_views_and_seo_settings.sql) — not Vercel logs, which don't
  * exist for this static SPA (no serverless functions handle page
  * requests, so there is nothing for `vercel logs` to record).
- * Returns all-zero stats gracefully if the migration hasn't been
- * applied yet, rather than breaking the Analytics page.
+ * Returns available:false gracefully if the migration hasn't been
+ * applied/synced yet, rather than breaking the Analytics page.
  */
 export async function adminGetVisitStats(daysBack = 30): Promise<VisitStats> {
-  const empty: VisitStats = { totalVisits: 0, uniqueVisitors: 0, visitsToday: 0, daily: [] };
-  if (!isSupabaseConfigured) return empty;
+  const empty = (reason?: string): VisitStats => ({
+    totalVisits: 0, uniqueVisitors: 0, visitsToday: 0, daily: [],
+    available: false, unavailableReason: reason,
+  });
+  if (!isSupabaseConfigured) return empty('Supabase is not configured.');
 
   const { data, error } = await supabase.rpc('get_visit_stats', { days_back: daysBack });
-  if (error || !data || !data[0]) return empty;
+  if (error) return empty(error.message);
+  if (!data || !data[0]) return empty('No data returned.');
 
   const row = data[0];
   return {
@@ -565,6 +576,7 @@ export async function adminGetVisitStats(daysBack = 30): Promise<VisitStats> {
     uniqueVisitors: Number(row.unique_visitors || 0),
     visitsToday: Number(row.visits_today || 0),
     daily: (row.daily as DailyVisits[]) || [],
+    available: true,
   };
 }
 
