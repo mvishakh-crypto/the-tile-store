@@ -4,16 +4,8 @@ import { Layers, ArrowRight, ShieldAlert, KeyRound, Mail, Lock, Eye, EyeOff } fr
 
 const ATTEMPTS_KEY = 'admin-login-attempts';
 const LOCKOUT_KEY = 'admin-login-lockout';
-const LOGIN_COUNT_KEY = 'admin-login-count';
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_SECONDS = 60;
-
-export function getLoginCount(): number {
-  return parseInt(localStorage.getItem(LOGIN_COUNT_KEY) || '0', 10);
-}
-function incrementLoginCount(): void {
-  localStorage.setItem(LOGIN_COUNT_KEY, String(getLoginCount() + 1));
-}
 
 function getAttempts(): number {
   return parseInt(localStorage.getItem(ATTEMPTS_KEY) || '0', 10);
@@ -123,7 +115,6 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
       }
 
       clearLockout();
-      incrementLoginCount();
       onLoginSuccess();
     } catch (err: any) {
       handleFailedAttempt(err?.message);
