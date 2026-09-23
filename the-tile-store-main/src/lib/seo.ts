@@ -9,7 +9,7 @@ export interface SEOConfig {
   canonicalUrl?: string;
   image?: string;
   type?: 'website' | 'product' | 'article';
-  schema?: Record<string, unknown>;
+  schema?: Record<string, unknown> | Record<string, unknown>[];
   noIndex?: boolean;
 }
 
@@ -34,6 +34,38 @@ export function setSEODefaults(overrides: Partial<SEOConfig>): void {
 const SITE_NAME = 'The Tile Store';
 const SITE_URL = typeof window !== 'undefined' ? window.location.origin : 'https://thetilestore.com';
 const TWITTER_HANDLE = '@thetilestore';
+
+// Mirrors the category list in productService.ts — duplicated here (display
+// labels only, not used for any data fetching) to avoid a lib -> service
+// import for what is purely breadcrumb text.
+const CATEGORY_LABELS: Record<string, string> = {
+  marble: 'Marble Slabs',
+  floor: 'Floor Tiles',
+  wall: 'Wall Tiles',
+  bathroom: 'Bathroom',
+  kitchen: 'Kitchen',
+  outdoor: 'Outdoor',
+  wood: 'Wood Replicate',
+  elevation: 'Elevation & Facade',
+};
+
+/**
+ * Build a schema.org BreadcrumbList from an ordered list of crumbs.
+ * Always prepend Home yourself if it belongs in the trail — this does not
+ * assume one.
+ */
+function buildBreadcrumbList(crumbs: Array<{ name: string; url: string }>): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: crumbs.map((crumb, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: crumb.name,
+      item: crumb.url,
+    })),
+  };
+}
 
 /**
  * Apply SEO meta tags to the document head.
@@ -174,13 +206,19 @@ export const SEO_CONFIGS = {
       'Explore our luxury tile collections. Filter by brand, style, size, finish, and price category. From Statuario marble to artisanal Zellige.',
     canonicalUrl: `${SITE_URL}/#/collections`,
     type: 'website',
-    schema: {
-      '@context': 'https://schema.org',
-      '@type': 'CollectionPage',
-      name: 'Tile Collections',
-      description: 'Complete luxury tile and slab collection with advanced filters.',
-      url: `${SITE_URL}/#/collections`,
-    },
+    schema: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: 'Tile Collections',
+        description: 'Complete luxury tile and slab collection with advanced filters.',
+        url: `${SITE_URL}/#/collections`,
+      },
+      buildBreadcrumbList([
+        { name: 'Home', url: SITE_URL },
+        { name: 'Collections', url: `${SITE_URL}/#/collections` },
+      ]),
+    ],
   }),
 
   product: (product: {
@@ -194,35 +232,55 @@ export const SEO_CONFIGS = {
     priceCategory: string;
     slug?: string;
     id: string;
-  }): SEOConfig => ({
-    title: `${product.name} — ${product.finish} ${product.material} | The Tile Store`,
-    description: product.description.slice(0, 160) + (product.description.length > 160 ? '...' : ''),
-    image: product.image,
-    canonicalUrl: `${SITE_URL}/#/product/${product.slug || product.id}`,
-    type: 'product',
-    schema: {
-      '@context': 'https://schema.org',
-      '@type': 'Product',
-      name: product.name,
+    category?: string;
+  }): SEOConfig => {
+    const productUrl = `${SITE_URL}/#/product/${product.slug || product.id}`;
+    const categoryLabel = product.category ? CATEGORY_LABELS[product.category] : undefined;
+    const breadcrumbCrumbs = [
+      { name: 'Home', url: SITE_URL },
+      { name: 'Collections', url: `${SITE_URL}/#/collections` },
+    ];
+    if (categoryLabel) {
+      breadcrumbCrumbs.push({
+        name: categoryLabel,
+        url: `${SITE_URL}/#/collections?category=${product.category}`,
+      });
+    }
+    breadcrumbCrumbs.push({ name: product.name, url: productUrl });
+
+    return {
+      title: `${product.name} — ${product.finish} ${product.material} | The Tile Store`,
+      description: product.description.slice(0, 160) + (product.description.length > 160 ? '...' : ''),
       image: product.image,
-      description: product.description,
-      sku: product.code,
-      mpn: product.code,
-      brand: {
-        '@type': 'Brand',
-        name: product.brand || 'Atelier Selection',
-      },
-      offers: {
-        '@type': 'Offer',
-        priceCurrency: 'INR',
-        availability: 'https://schema.org/InStock',
-        seller: {
-          '@type': 'Organization',
-          name: SITE_NAME,
+      canonicalUrl: productUrl,
+      type: 'product',
+      schema: [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          name: product.name,
+          image: product.image,
+          description: product.description,
+          sku: product.code,
+          mpn: product.code,
+          brand: {
+            '@type': 'Brand',
+            name: product.brand || 'Atelier Selection',
+          },
+          offers: {
+            '@type': 'Offer',
+            priceCurrency: 'INR',
+            availability: 'https://schema.org/InStock',
+            seller: {
+              '@type': 'Organization',
+              name: SITE_NAME,
+            },
+          },
         },
-      },
-    },
-  }),
+        buildBreadcrumbList(breadcrumbCrumbs),
+      ],
+    };
+  },
 
   blog: (): SEOConfig => ({
     title: 'Atelier Editorial — Interior Design Trends, Tile Guides & Material Science',
@@ -230,18 +288,24 @@ export const SEO_CONFIGS = {
       'Read our expert guides on tile selection, material science, design trends, slip resistance ratings, and architectural surface care.',
     canonicalUrl: `${SITE_URL}/#/blog`,
     type: 'website',
-    schema: {
-      '@context': 'https://schema.org',
-      '@type': 'Blog',
-      name: 'Atelier Editorial',
-      description: 'Design insights, material guides, and architectural trends from The Tile Store.',
-      url: `${SITE_URL}/#/blog`,
-      publisher: {
-        '@type': 'Organization',
-        name: SITE_NAME,
-        url: SITE_URL,
+    schema: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Blog',
+        name: 'Atelier Editorial',
+        description: 'Design insights, material guides, and architectural trends from The Tile Store.',
+        url: `${SITE_URL}/#/blog`,
+        publisher: {
+          '@type': 'Organization',
+          name: SITE_NAME,
+          url: SITE_URL,
+        },
       },
-    },
+      buildBreadcrumbList([
+        { name: 'Home', url: SITE_URL },
+        { name: 'Atelier Editorial', url: `${SITE_URL}/#/blog` },
+      ]),
+    ],
   }),
 
   blogPost: (post: {
@@ -258,25 +322,32 @@ export const SEO_CONFIGS = {
     image: post.coverImage || undefined,
     canonicalUrl: `${SITE_URL}/#/blog/read/${post.slug}`,
     type: 'article',
-    schema: {
-      '@context': 'https://schema.org',
-      '@type': 'BlogPosting',
-      headline: post.title,
-      description: post.excerpt || post.title,
-      image: post.coverImage || undefined,
-      author: {
-        '@type': 'Organization',
-        name: post.authorName,
+    schema: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: post.title,
+        description: post.excerpt || post.title,
+        image: post.coverImage || undefined,
+        author: {
+          '@type': 'Organization',
+          name: post.authorName,
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: SITE_NAME,
+          url: SITE_URL,
+        },
+        datePublished: post.publishedAt || undefined,
+        keywords: post.tags.join(', '),
+        url: `${SITE_URL}/#/blog/read/${post.slug}`,
       },
-      publisher: {
-        '@type': 'Organization',
-        name: SITE_NAME,
-        url: SITE_URL,
-      },
-      datePublished: post.publishedAt || undefined,
-      keywords: post.tags.join(', '),
-      url: `${SITE_URL}/#/blog/read/${post.slug}`,
-    },
+      buildBreadcrumbList([
+        { name: 'Home', url: SITE_URL },
+        { name: 'Atelier Editorial', url: `${SITE_URL}/#/blog` },
+        { name: post.title, url: `${SITE_URL}/#/blog/read/${post.slug}` },
+      ]),
+    ],
   }),
 
   partners: (): SEOConfig => ({

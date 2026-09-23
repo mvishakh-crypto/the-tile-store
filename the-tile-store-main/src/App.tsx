@@ -284,6 +284,7 @@ export default function App() {
             priceCategory: tile.priceCategory,
             slug: tile.slug,
             id: tile.id,
+            category: tile.category,
           }));
           // Track product page view
           trackProductView(tile.id, 'direct');
