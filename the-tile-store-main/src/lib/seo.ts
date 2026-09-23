@@ -16,7 +16,7 @@ export interface SEOConfig {
 const DEFAULT_CONFIG: SEOConfig = {
   title: 'The Tile Store — Premium Luxury Surfaces & Interiors',
   description:
-    'Discover premium luxury tiles, marble slabs, and designer surfaces. Curated collections for architects and interior designers in Kerala and across India.',
+    'Discover premium luxury tiles, marble slabs, and designer surfaces. Curated collections for architects and interior designers in Chennai and across Tamil Nadu.',
   image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80',
   type: 'website',
 };
@@ -123,7 +123,7 @@ export const SEO_CONFIGS = {
   home: (): SEOConfig => ({
     title: 'The Tile Store — Premium Luxury Surfaces & Interiors | Curated Slabs & Tile Archive',
     description:
-      'Discover premium luxury tiles, marble slabs, and designer surfaces. Curated collections for architects and interior designers in Kerala and across India.',
+      'Discover premium luxury tiles, marble slabs, and designer surfaces. Curated collections for architects and interior designers in Chennai and across Tamil Nadu.',
     canonicalUrl: SITE_URL,
     type: 'website',
     schema: {
@@ -138,16 +138,21 @@ export const SEO_CONFIGS = {
       priceRange: '₹₹₹',
       address: {
         '@type': 'PostalAddress',
-        addressLocality: 'Kochi',
-        addressRegion: 'Kerala',
-        postalCode: '682001',
+        streetAddress: 'No. 107/1, Chettiyar Agaram Street, near KPN Farms Pvt Ltd, Rajiv Gandhi Nagar, Vanagaram',
+        addressLocality: 'Chennai',
+        addressRegion: 'Tamil Nadu',
+        postalCode: '600077',
         addressCountry: 'IN',
       },
+      // NOTE: Vanagaram neighbourhood-level coordinates — refine to the exact
+      // showroom location once available (see Checkpoint A follow-up).
       geo: {
         '@type': 'GeoCoordinates',
-        latitude: '9.9312',
-        longitude: '76.2673',
+        latitude: '13.0533',
+        longitude: '80.1611',
       },
+      hasMap:
+        'https://www.google.com/maps/place/No.+107%2F1,+The+Tile+Store,+Chettiyar+Agaram+St,+next+to+KPN+Farms+Pvt+Ltd,+Rajiv+Nagar,+Rajiv+Gandhi+Nagar,+Vanagaram,+Chennai,+Tamil+Nadu+600077/data=!4m2!3m1!1s0x3a526108ff352bb9:0x3570a5d70783502b!18m1!1e1',
       openingHoursSpecification: [
         {
           '@type': 'OpeningHoursSpecification',
@@ -158,7 +163,7 @@ export const SEO_CONFIGS = {
       ],
       sameAs: [
         'https://www.instagram.com/the.tilestore.official/',
-        'https://www.facebook.com/share/14gwwRM3WpF/',
+        'https://www.facebook.com/share/19VqvCRFda/',
       ],
     },
   }),
@@ -193,7 +198,7 @@ export const SEO_CONFIGS = {
     title: `${product.name} — ${product.finish} ${product.material} | The Tile Store`,
     description: product.description.slice(0, 160) + (product.description.length > 160 ? '...' : ''),
     image: product.image,
-    canonicalUrl: `${SITE_URL}/#/product/${product.id}`,
+    canonicalUrl: `${SITE_URL}/#/product/${product.slug || product.id}`,
     type: 'product',
     schema: {
       '@context': 'https://schema.org',

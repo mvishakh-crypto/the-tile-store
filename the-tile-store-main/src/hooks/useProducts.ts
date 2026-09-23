@@ -5,7 +5,7 @@ import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { queryKeys } from '../lib/queryClient';
 import {
   getProducts,
-  getProductById,
+  getProductByIdOrSlug,
   getFeaturedProducts,
   getLatestProducts,
   getRelatedProducts,
@@ -53,11 +53,11 @@ export function useInfiniteProducts(
 // ============================================================
 // SINGLE PRODUCT
 // ============================================================
-export function useProduct(id: string) {
+export function useProduct(idOrSlug: string) {
   return useQuery({
-    queryKey: queryKeys.products.detail(id),
-    queryFn: () => getProductById(id),
-    enabled: !!id,
+    queryKey: queryKeys.products.detail(idOrSlug),
+    queryFn: () => getProductByIdOrSlug(idOrSlug),
+    enabled: !!idOrSlug,
     staleTime: 10 * 60 * 1000, // 10 minutes — product pages change rarely
   });
 }

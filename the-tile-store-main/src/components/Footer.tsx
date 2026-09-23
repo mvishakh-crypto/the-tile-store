@@ -189,7 +189,7 @@ export default function Footer({ onNavigate }: FooterProps) {
               <div className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-gold-400 shrink-0 mt-0.5" />
                 <span className="leading-relaxed">
-                  33/2180 B-1, NH Bypass, Geethanjali Junction, Chalikkavattom, Ernakulam, Kochi, Kerala - 682032
+                  No. 107/1, Chettiyar Agaram Street, near KPN Farms Pvt Ltd, Rajiv Gandhi Nagar, Vanagaram, Chennai, Tamil Nadu - 600077
                 </span>
               </div>
 

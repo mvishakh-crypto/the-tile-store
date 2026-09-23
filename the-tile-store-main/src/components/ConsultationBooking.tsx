@@ -72,7 +72,7 @@ export default function ConsultationBooking() {
   };
 
   const handleWhatsApp = () => {
-    const text = encodeURIComponent(`Hello Tile Store Team, I am looking to schedule a private tour of your showroom in Kochi. Interest: ${formData.interestType}.`);
+    const text = encodeURIComponent(`Hello Tile Store Team, I am looking to schedule a private tour of your showroom in Vanagaram, Chennai. Interest: ${formData.interestType}.`);
     window.open(`https://wa.me/919092599111?text=${text}`, '_blank');
   };
 
@@ -128,7 +128,7 @@ export default function ConsultationBooking() {
               </button>
 
               <a
-                href="https://maps.google.com/?q=The+Tile+Store+Geethanjali+Junction+NH+Bypass+Chalikkavattom+Ernakulam+Kochi"
+                href="https://www.google.com/maps/place/No.+107%2F1,+The+Tile+Store,+Chettiyar+Agaram+St,+next+to+KPN+Farms+Pvt+Ltd,+Rajiv+Nagar,+Rajiv+Gandhi+Nagar,+Vanagaram,+Chennai,+Tamil+Nadu+600077/data=!4m2!3m1!1s0x3a526108ff352bb9:0x3570a5d70783502b!18m1!1e1"
                 target="_blank"
                 rel="noreferrer"
                 className="px-6 py-3.5 bg-transparent border border-white/20 text-white hover:border-gold-500 font-sans text-xs font-semibold tracking-widest uppercase flex items-center gap-2 cursor-pointer transition-all duration-300"

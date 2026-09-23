@@ -12,9 +12,9 @@ const slides = [
     image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1920&q=90',
     tag: 'Architectural Surfaces',
     title: 'Crafting *Spaces* <br/>That Define <br/>Luxury.',
-    desc: 'Curating world-class premium tiles, large-format sintered slabs, and upscale interior inspirations designed for the most discerning modern homes of Kerala.',
+    desc: 'Curating world-class premium tiles, large-format sintered slabs, and upscale interior inspirations designed for the most discerning modern homes of Chennai.',
     accent: 'Alabaster Statuario Gold',
-    location: 'Kochi Flagship Galleria, NH Bypass'
+    location: 'Vanagaram Showroom, Chennai'
   },
   {
     image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=90',
@@ -22,7 +22,7 @@ const slides = [
     title: 'The Art of *Living*, <br/>Sculpted with <br/>Integrity.',
     desc: 'Elevate culinary spaces, high-end kitchens, and ambient lounges with our luxury curated brands of unparalleled international acclaim.',
     accent: 'Satin Statuario Borghini',
-    location: 'Ernakulam Experience Studio'
+    location: 'Vanagaram Showroom, Chennai'
   },
   {
     image: 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=1920&q=90',
@@ -30,7 +30,7 @@ const slides = [
     title: 'Immunity to *Elements*, <br/>Rooted in <br/>Raw Stone.',
     desc: 'Outdoor terraces, heavy-duty paving, and swimming pool claddings selected for premium endurance against moisture and elements.',
     accent: 'Silver Travertine Grigio',
-    location: 'Calicut Boutique Atelier'
+    location: 'Vanagaram Showroom, Chennai'
   }
 ];
 

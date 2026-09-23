@@ -329,6 +329,38 @@ export async function getProductById(id: string): Promise<TileProduct | null> {
 }
 
 /**
+ * Get a single product by its readable slug (preferred for URLs/SEO).
+ */
+export async function getProductBySlug(slug: string): Promise<TileProduct | null> {
+  if (!isSupabaseConfigured) {
+    return getLocalProducts().find(p => p.slug === slug || p.id === slug) ?? null;
+  }
+
+  const { data, error } = await supabase
+    .from('products_with_details')
+    .select('*')
+    .eq('slug', slug)
+    .single();
+
+  if (error || !data) {
+    return getLocalProducts().find(p => p.slug === slug || p.id === slug) ?? null;
+  }
+
+  return mapDbProductToTileProduct(data as Record<string, unknown>);
+}
+
+/**
+ * Resolve a product from a URL segment that may be a slug (preferred,
+ * current links) or a raw id (legacy links already shared/indexed before
+ * slugs were wired into routing — keep resolving these, don't 404 them).
+ */
+export async function getProductByIdOrSlug(idOrSlug: string): Promise<TileProduct | null> {
+  const bySlug = await getProductBySlug(idOrSlug);
+  if (bySlug) return bySlug;
+  return getProductById(idOrSlug);
+}
+
+/**
  * Get featured/trending products for the homepage hero.
  */
 export async function getFeaturedProducts(limit = 6): Promise<TileProduct[]> {

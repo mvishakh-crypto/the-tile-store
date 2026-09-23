@@ -449,7 +449,7 @@ export const tileProducts: TileProduct[] = [
     origin: 'Tuscany, Italy',
     priceCategory: 'Premium',
     image: 'https://images.unsplash.com/photo-1621886292650-520f76c747d6?auto=format&fit=crop&w=800&q=80',
-    description: 'Warm, rustic cotto tiles replicating hand-pressed Tuscan clayware. High thermal properties and anti-slip structures make it exceptionally ideal for Kerala’s open verandas, courtyards, and sunlit patios.',
+    description: 'Warm, rustic cotto tiles replicating hand-pressed Tuscan clayware. High thermal properties and anti-slip structures make it exceptionally ideal for Chennai’s open verandas, courtyards, and sunlit patios.',
     features: ['High Slip-Resistance R12', 'Excellent thermal insulator', 'Frost & mold resistant', 'Natural earthy clay tone'],
     color: 'Orange',
     texture: 'Earthy Clay',

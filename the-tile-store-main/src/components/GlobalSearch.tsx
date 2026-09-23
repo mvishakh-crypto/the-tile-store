@@ -583,7 +583,7 @@ export default function GlobalSearch({ isOpen, onClose, onSelectTile, onSelectBr
             <div className="pt-4 border-t border-charcoal/5 flex items-center justify-between font-mono text-[9px] text-charcoal/40 uppercase tracking-widest bg-white/40 -mx-6 -mb-6 p-4 px-6 sm:px-8">
               <span className="flex items-center gap-2">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                Live Kochi Atelier Indexing
+                Live Showroom Indexing
               </span>
               <span>
                 Press <kbd className="bg-charcoal/10 px-1 py-0.5 rounded-sm">ESC</kbd> to exit

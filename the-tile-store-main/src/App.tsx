@@ -33,7 +33,7 @@ import { useSupabaseAuth } from './hooks/useSupabaseAuth';
 import { useCompare } from './hooks/useCompare';
 import { useRecentlyViewed } from './hooks/useRecentlyViewed';
 import { useDarkMode } from './hooks/useDarkMode';
-import { getProductById } from './services/productService';
+import { getProductByIdOrSlug } from './services/productService';
 import { useRealtimeSync } from './hooks/useRealtimeSync';
 import {
   trackProductView,
@@ -270,8 +270,8 @@ export default function App() {
     } else if (currentHash === '#/collections' || currentHash === '#/collections/all') {
       applySEO(withSEOOverride(SEO_CONFIGS.collections(), 'collections'));
     } else if (currentHash.startsWith('#/product/')) {
-      const id = currentHash.replace('#/product/', '');
-      getProductById(id).then(tile => {
+      const idOrSlug = currentHash.replace('#/product/', '');
+      getProductByIdOrSlug(idOrSlug).then(tile => {
         if (tile) {
           applySEO(SEO_CONFIGS.product({
             name: tile.name,
@@ -282,10 +282,11 @@ export default function App() {
             finish: tile.finish,
             brand: tile.brand,
             priceCategory: tile.priceCategory,
+            slug: tile.slug,
             id: tile.id,
           }));
           // Track product page view
-          trackProductView(id, 'direct');
+          trackProductView(tile.id, 'direct');
         }
       });
     } else if (currentHash === '#/partners') {
@@ -396,7 +397,7 @@ export default function App() {
   const handleOpenProductDetail = (tile: TileProduct) => {
     trackProductView(tile.id, 'catalog');
     addToRecent(tile);
-    handleNavigate(`#/product/${tile.id}`);
+    handleNavigate(`#/product/${tile.slug || tile.id}`);
   };
 
   if (currentPage === 'admin') {

@@ -168,7 +168,7 @@ export default function ProductDetailPage({
               <div className="aspect-square bg-white border border-charcoal/10 overflow-hidden relative shadow-sm flex flex-col items-center justify-center p-3 text-center">
                 <MapPin className="w-5 h-5 text-gold-600 mb-1.5" />
                 <span className="font-mono text-[8.5px] font-bold text-charcoal uppercase tracking-widest">STOCK STATUS</span>
-                <span className="font-sans text-[9px] text-emerald-600 font-semibold mt-0.5">Kochi Warehouse</span>
+                <span className="font-sans text-[9px] text-emerald-600 font-semibold mt-0.5">Chennai Warehouse</span>
               </div>
             </div>
           </div>
@@ -403,7 +403,7 @@ export default function ProductDetailPage({
 
                 <div className="space-y-4">
                   {[
-                    { name: 'Studio Aurelius Kochi', role: 'Premium Architect', quote: 'The Statuario slabs supplied by The Tile Store were cut meticulously. Color match across bookmatch layouts is clean. We recommend them for high-end Kerala coastal villas.' },
+                    { name: 'Studio Aurelius Chennai', role: 'Premium Architect', quote: 'The Statuario slabs supplied by The Tile Store were cut meticulously. Color match across bookmatch layouts is clean. We recommend them for high-end Chennai villas.' },
                     { name: 'Nisha R., Principal Designer', role: 'Residential Consultant', quote: 'Stunning gloss depth and scratch resistance. Used in a double-height lounge foyer layout and the final mirror reflection exceeds clients expectations. Logistics were perfectly coordinated.' }
                   ].map((rev, idx) => (
                     <div key={idx} className="p-4 border border-charcoal/5">
@@ -459,7 +459,7 @@ export default function ProductDetailPage({
             {(relatedProducts ?? []).map(tile => (
               <div
                 key={tile.id}
-                onClick={() => onNavigate(`#/product/${tile.id}`)}
+                onClick={() => onNavigate(`#/product/${tile.slug || tile.id}`)}
                 className="bg-white border border-charcoal/5 overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-gold-400/40 cursor-pointer flex flex-col justify-between group"
               >
                 <div className="aspect-square bg-ivory overflow-hidden relative">
@@ -480,7 +480,7 @@ export default function ProductDetailPage({
                   <div>
                     <div className="flex justify-between items-center mb-1">
                       <span className="font-mono text-[8px] text-charcoal/40">{tile.code}</span>
-                      <span className="font-mono text-[8px] text-gold-600 font-bold uppercase">{tile.brand || 'Kochi'}</span>
+                      <span className="font-mono text-[8px] text-gold-600 font-bold uppercase">{tile.brand || 'The Tile Store'}</span>
                     </div>
                     <h4 className="font-serif text-sm font-semibold text-charcoal truncate group-hover:text-gold-600 transition-colors">
                       {tile.name}

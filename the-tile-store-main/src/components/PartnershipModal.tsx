@@ -132,7 +132,7 @@ export default function PartnershipModal({ isOpen, onClose }: PartnershipModalPr
 
               <div className="pt-8 border-t border-white/5 flex items-center gap-2 mt-8 text-[9px] font-mono text-gray-500 uppercase tracking-widest">
                 <Sparkles className="w-3.5 h-3.5 text-gold-500 animate-pulse" />
-                Licensed Showrooms in Kochi & Bangalore
+                Licensed Showroom in Chennai
               </div>
             </div>
 
@@ -221,7 +221,7 @@ export default function PartnershipModal({ isOpen, onClose }: PartnershipModalPr
                           type="text"
                           value={formData.location}
                           onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                          placeholder="e.g. Kochi, Kerala"
+                          placeholder="e.g. Chennai, Tamil Nadu"
                           className="w-full bg-white border border-charcoal/10 px-3.5 py-2.5 outline-none font-sans text-xs"
                         />
                       </div>
