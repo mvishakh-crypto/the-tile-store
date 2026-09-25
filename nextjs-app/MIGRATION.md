@@ -77,5 +77,65 @@ redid the foundational-layer work correctly. No bad commit ever went out
 because of this, but the mistake happened and is logged here rather than
 quietly omitted.
 
-Components (52 files, ~16 touching browser APIs directly and needing
-`'use client'`) — not started yet.
+## Phase 3 — Shared components: DONE
+
+All 55 files ported: 11 services, 15 hooks, 25 components, 4 page-level
+composites (`page-components/` — not `pages/`, to avoid colliding with
+Next.js's legacy Pages Router naming). Directory structure preserves the
+same sibling relationships as the Vite app (`lib/`, `services/`, `hooks/`,
+`components/`, `types/`, `data/` all siblings) specifically so every
+existing relative import resolves unchanged — confirmed, zero import path
+rewrites were needed anywhere.
+
+Only one Vite-specific line existed in this entire batch:
+`aiService.ts`'s Gemini key (`import.meta.env.VITE_*` ->
+`process.env.NEXT_PUBLIC_*`). Confirmed via a full-tree grep both before
+and after, not assumed.
+
+`'use client'` added to all 44 hook/component/page-component files —
+every one of them needed it (none were purely server-renderable as
+written). Boundary *optimization* (pushing `'use client'` down to just
+the interactive leaf elements, letting more of the tree be genuinely
+server-rendered) is a valid future refinement, not done here — Phase 3's
+job was getting everything compiling and functioning as client
+components first.
+
+**Two real issues found and fixed, not papered over:**
+
+1. Three hook files (`useCompare.ts`, `useMoodboard.ts`,
+   `useRecentlyViewed.ts`) already had `// @ts-nocheck` in the original
+   codebase (those Supabase tables aren't in the generated
+   `database.types.ts`, so the original author suppressed the resulting
+   errors). Blanket-prepending `'use client'` above that comment broke
+   it — `'use client'` is a real statement, not a comment, so it pushed
+   `@ts-nocheck` out of the leading position TypeScript requires to honor
+   it, and 9 real (pre-existing, previously-suppressed) type errors
+   surfaced. Fixed by reordering to `// @ts-nocheck` first, `'use
+   client'` second — satisfies both TypeScript's requirement and Next's
+   (which tolerates a leading comment before the directive).
+
+2. `useSearch.ts` had one genuine type gap (`SearchFilters` passed where
+   `queryKeys.search.results()` expects `Record<string, unknown>`) that
+   does NOT reproduce in the original Vite project — spent real time
+   trying to find the environmental cause (TypeScript version, `strict`
+   mode, exact package versions, even a byte-diff of the files — all
+   ruled out, all identical between both projects) without finding a
+   definitive answer. Time-boxed the investigation and fixed the actual
+   type gap directly at the call site instead (a narrow, correct cast —
+   `queryKeys.search.results()` only needs the value to be serializable
+   into a cache key, it doesn't structurally depend on `SearchFilters`'
+   shape). Correct either way, whatever the environmental cause turns
+   out to be.
+
+Verified with `npx tsc --noEmit` (full project, confirmed via
+`tsconfig.json`'s `include` that these files are actually checked) AND
+`next build` — both clean, zero errors, after the fixes above.
+
+**Honest scope note:** none of these 55 files are wired into any actual
+page yet — Phase 2's placeholder pages still don't import them. This
+phase verified they compile correctly in isolation, not that they render
+correctly composed together (that needs real data flowing through them,
+which is Phase 4's job). Don't read "Phase 3 done" as "the site works" —
+it isn't wired up yet.
+
+## Phase 4 onward — NOT STARTED
