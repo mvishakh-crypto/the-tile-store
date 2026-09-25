@@ -25,8 +25,26 @@ the full 10-phase plan. This file tracks what's actually landed in this repo.
   genuinely server-only variable, which the old client-only Vite app had
   no safe way to use at all.
 
-## Phase 2 onward — NOT STARTED
+## Phase 2 — Route skeleton: DONE
 
-Route skeleton, data fetching, SEO system, interactive features, admin
-panel, deployment config, parity testing, cutover — all still ahead, per
-the full plan. Nothing beyond the scaffold above should be assumed done.
+- Real file-based routes for every path from Phase 6's scheme: `/`,
+  `/collections`, `/product/[slug]`, `/partners`, `/calculator`, `/blog`,
+  `/blog/read/[slug]`.
+- Verified beyond just "it builds" this time — actually ran `next start`
+  and curled every route:
+  - All 7 return HTTP 200; an unknown path correctly returns 404 (Next's
+    own not-found handling, working out of the box).
+  - `/` and `/collections`'s raw HTML (curled directly, no JS execution)
+    already contains real `<title>`/`<meta>` tags in the initial
+    response — confirms the actual point of this migration is working,
+    not just assumed.
+  - `/product/[slug]` and `/blog/read/[slug]` are marked dynamic (ƒ) by
+    Next's own build output, not static — and the slug value was
+    confirmed present in the server-rendered payload for a test URL
+    (`/product/kajaria-enormearenado-grey`), so the dynamic segment is
+    genuinely reaching the server-rendered output, not just routing
+    correctly.
+- All pages are still placeholder content — Phase 2's job was proving the
+  routes resolve and render server-side, not building real UI.
+
+## Phase 3 onward — NOT STARTED
