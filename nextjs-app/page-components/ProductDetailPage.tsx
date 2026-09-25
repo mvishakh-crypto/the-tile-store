@@ -14,6 +14,8 @@ import { trackProductView } from '../lib/analytics';
 
 interface ProductDetailPageProps {
   productId: string;
+  initialProduct?: TileProduct | null;
+  initialRelatedProducts?: TileProduct[];
   onNavigate: (hash: string) => void;
   onAddToInquiry: (product: TileProduct) => void;
   onAddToWishlist: (product: TileProduct) => void;
@@ -29,6 +31,8 @@ type TabId = 'specs' | 'shipping' | 'reviews' | 'instructions';
 
 export default function ProductDetailPage({
   productId,
+  initialProduct,
+  initialRelatedProducts,
   onNavigate,
   onAddToInquiry,
   onAddToWishlist,
@@ -49,8 +53,11 @@ export default function ProductDetailPage({
   } | null>(null);
   const [estimating, setEstimating] = useState(false);
 
-  const { data: product, isLoading: productLoading } = useProduct(productId);
-  const { data: relatedProducts } = useRelatedProducts(product?.id || '', 4);
+  // initialData seeded from the server — first paint already has real
+  // content (the whole point of this migration), React Query still
+  // re-fetches/revalidates client-side as normal after that.
+  const { data: product, isLoading: productLoading } = useProduct(productId, initialProduct ?? undefined);
+  const { data: relatedProducts } = useRelatedProducts(product?.id || '', 4, initialRelatedProducts);
 
   // Track product page view in analytics
   useEffect(() => {

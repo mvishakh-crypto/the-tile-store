@@ -1,32 +1,51 @@
 // ============================================================
 // React Query Client — optimized caching for luxury tile store
 // ============================================================
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClient, isServer } from '@tanstack/react-query';
 
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      // Products and catalog data: fresh for 5 min, cached for 30 min
-      staleTime: 5 * 60 * 1000,
-      gcTime: 30 * 60 * 1000,
-      retry: (failureCount, error) => {
-        // Don't retry on 4xx errors
-        if (error && typeof error === 'object' && 'code' in error) {
-          const code = (error as { code: string }).code;
-          if (['PGRST116', 'NOT_FOUND', '400', '401', '403'].includes(code)) {
-            return false;
+function makeQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        // Products and catalog data: fresh for 5 min, cached for 30 min
+        staleTime: 5 * 60 * 1000,
+        gcTime: 30 * 60 * 1000,
+        retry: (failureCount, error) => {
+          // Don't retry on 4xx errors
+          if (error && typeof error === 'object' && 'code' in error) {
+            const code = (error as { code: string }).code;
+            if (['PGRST116', 'NOT_FOUND', '400', '401', '403'].includes(code)) {
+              return false;
+            }
           }
-        }
-        return failureCount < 2;
+          return failureCount < 2;
+        },
+        retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000),
+        refetchOnWindowFocus: false,
       },
-      retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000),
-      refetchOnWindowFocus: false,
+      mutations: {
+        retry: 1,
+      },
     },
-    mutations: {
-      retry: 1,
-    },
-  },
-});
+  });
+}
+
+// On the server: a fresh QueryClient per request. A module-level singleton
+// here would be shared across every concurrent request on the same server
+// process — one visitor's cached data leaking into another's response.
+// In the browser: one client for the lifetime of the tab, reused across
+// client-side navigations (this is what actually makes the cache useful).
+let browserQueryClient: QueryClient | undefined;
+
+export function getQueryClient(): QueryClient {
+  if (isServer) {
+    return makeQueryClient();
+  }
+  if (!browserQueryClient) {
+    browserQueryClient = makeQueryClient();
+  }
+  return browserQueryClient;
+}
 
 // ============================================================
 // Query Key factory — structured, typed cache keys

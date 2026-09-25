@@ -55,12 +55,13 @@ export function useInfiniteProducts(
 // ============================================================
 // SINGLE PRODUCT
 // ============================================================
-export function useProduct(idOrSlug: string) {
+export function useProduct(idOrSlug: string, initialData?: Awaited<ReturnType<typeof getProductByIdOrSlug>>) {
   return useQuery({
     queryKey: queryKeys.products.detail(idOrSlug),
     queryFn: () => getProductByIdOrSlug(idOrSlug),
     enabled: !!idOrSlug,
     staleTime: 10 * 60 * 1000, // 10 minutes — product pages change rarely
+    initialData,
   });
 }
 
@@ -89,12 +90,13 @@ export function useLatestProducts(limit = 8) {
 // ============================================================
 // RELATED PRODUCTS (product detail page)
 // ============================================================
-export function useRelatedProducts(productId: string, limit = 6) {
+export function useRelatedProducts(productId: string, limit = 6, initialData?: Awaited<ReturnType<typeof getRelatedProducts>>) {
   return useQuery({
     queryKey: queryKeys.products.related(productId),
     queryFn: () => getRelatedProducts(productId, limit),
     enabled: !!productId,
     staleTime: 15 * 60 * 1000,
+    initialData,
   });
 }
 

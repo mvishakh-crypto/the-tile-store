@@ -138,4 +138,62 @@ correctly composed together (that needs real data flowing through them,
 which is Phase 4's job). Don't read "Phase 3 done" as "the site works" —
 it isn't wired up yet.
 
-## Phase 4 onward — NOT STARTED
+## Phase 4 — Data fetching: IN PROGRESS
+
+**Product page (`/product/[slug]`) — done and verified end-to-end.**
+
+- `app/product/[slug]/page.tsx`: real async Server Component —
+  `getProductByIdOrSlug()` awaited directly server-side, `notFound()` on a
+  miss, `generateMetadata()` built from the real product (title,
+  description, canonical, OG image), Product + BreadcrumbList JSON-LD
+  rendered server-side as an inline script tag from the same data.
+- `ProductPageClient.tsx`: thin client wrapper — receives the
+  server-fetched product/related-products as props, translates the
+  app's existing `'#/...'` route-key strings to real `router.push()`
+  calls, and explicitly stubs the wishlist/compare/inquiry-cart
+  handlers with a comment marking them Phase 6's job — not silently
+  faked as working.
+- `ProductDetailPage.tsx` and `useProduct`/`useRelatedProducts` updated
+  to accept optional `initialData`, seeding React Query's cache from the
+  server fetch — first paint already has real content, client-side
+  re-fetching/revalidation still works normally after hydration.
+
+**One real bug found and fixed before it ever reached production:**
+`lib/queryClient.ts` exported a single module-level `QueryClient`
+singleton — copied straight from the Vite app, where that's correct
+(one browser tab, one client, for the app's whole lifetime). In Next.js,
+Server Components for *every* concurrent request on the same server
+process would have shared that one instance — one visitor's cached data
+leaking into another's response. Caught via a real 500 error
+("No QueryClient set") while testing, traced to its actual root cause
+rather than papered over, and fixed properly: `getQueryClient()` now
+returns a fresh client per request on the server, and a stable
+browser-side singleton on the client (the standard documented pattern
+for React Query + Next.js App Router). Wired in via a new
+`components/Providers.tsx` in the root layout.
+
+Verified with a real running server, not just a build:
+- `/product/t1` (a real product from the static fallback data, since
+  this sandbox has no live Supabase connection) returns 200.
+- `/product/does-not-exist-xyz` correctly returns 404.
+- Curled directly, no JS execution: the real product title is in
+  `<title>`, the real product name is in the Product JSON-LD, and a
+  full, correct BreadcrumbList is present. This is the actual point of
+  the whole migration, confirmed working on a real request, not assumed.
+- Server log clean — no errors, including after the QueryClientProvider
+  fix.
+
+**Debugging note, logged honestly:** getting to a real product initially
+returned 404 even for a real product id, because the first id I tested
+with (`b1`) turned out to belong to the `premiumBrands` array in
+`tiles.ts`, not `tileProducts` — a wrong assumption on my part about the
+sample data, not a bug in the code. Caught by adding temporary debug
+logging (since removed) rather than guessing, confirmed against the
+actual data, then retested with a real product id (`t1`).
+
+**Not done yet:** collections, home, partners, calculator, blog, and
+blog-post routes — still Phase 2's placeholder content. Same
+server-fetch-plus-client-wrapper pattern established here carries over
+to each of them.
+
+## Phase 5 onward — NOT STARTED
