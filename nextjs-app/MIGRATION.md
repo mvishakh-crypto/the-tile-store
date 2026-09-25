@@ -47,4 +47,35 @@ the full 10-phase plan. This file tracks what's actually landed in this repo.
 - All pages are still placeholder content — Phase 2's job was proving the
   routes resolve and render server-side, not building real UI.
 
-## Phase 3 onward — NOT STARTED
+## Phase 3 — Shared components: IN PROGRESS
+
+Foundational layer ported first (everything else depends on it):
+- `types/index.ts`, `lib/database.types.ts`, `lib/analytics.ts`,
+  `lib/queryClient.ts`, `lib/rateLimiter.ts`, `lib/validation.ts`,
+  `data/tiles.ts` — copied as-is, no Next.js-specific changes needed.
+- `lib/supabase.ts` — the one file needing real changes: `VITE_*` env
+  vars → `NEXT_PUBLIC_*`, and `getSessionId()` (touches `localStorage`
+  directly) now throws explicitly if called during server-side rendering
+  instead of silently misbehaving, so a mistake here fails loud in
+  development rather than shipping a bug.
+- `lib/seo-legacy.ts` — the old `seo.ts` kept for reference during the
+  port, explicitly named to make clear it's being replaced (Phase 5), not
+  the real SEO system going forward.
+- Verified with both `next build` and a standalone `npx tsc --noEmit` —
+  confirmed via `tsconfig.json`'s `include` pattern that these files are
+  genuinely type-checked project-wide, not just silently unreferenced.
+
+**Process note, logged honestly:** early in this phase, work continued in
+this directory without re-checking-out the `nextjs-migration` branch
+first (a prior step had switched to `main`, which doesn't track this
+directory at all). Running `npm install` in that state overwrote
+`package.json` with a fresh one containing only the newly-added packages
+— `next`/`react`/all scripts briefly gone. Caught before committing
+anything: discarded the untracked directory, re-checked-out the branch
+(restoring the real Phase 1–2 state from git with nothing lost), and
+redid the foundational-layer work correctly. No bad commit ever went out
+because of this, but the mistake happened and is logged here rather than
+quietly omitted.
+
+Components (52 files, ~16 touching browser APIs directly and needing
+`'use client'`) — not started yet.
