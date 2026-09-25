@@ -7,7 +7,7 @@
 import { serve } from 'https://deno.land/std@0.208.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-const APP_URL = Deno.env.get('APP_URL') || 'https://thetilestore.com';
+const APP_URL = Deno.env.get('APP_URL') || 'https://www.thetilestore.in';
 
 function xmlEncode(str: string): string {
   return str
@@ -18,10 +18,12 @@ function xmlEncode(str: string): string {
     .replace(/'/g, '&apos;');
 }
 
-function urlEntry(loc: string, priority: number, changefreq: string, lastmod?: string): string {
+function urlEntry(path: string, priority: number, changefreq: string, lastmod?: string): string {
+  // path is a real, path-based route (e.g. '/', '/collections', '/product/x') —
+  // matches the site's routing since the hash -> path migration (Phase 6).
   return `
   <url>
-    <loc>${xmlEncode(`${APP_URL}/${loc}`)}</loc>
+    <loc>${xmlEncode(`${APP_URL}${path}`)}</loc>
     <priority>${priority.toFixed(1)}</priority>
     <changefreq>${changefreq}</changefreq>
     ${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}
@@ -59,26 +61,26 @@ serve(async (_req: Request) => {
     // Build sitemap XML
     const urls = [
       // Homepage
-      urlEntry('#/', 1.0, 'daily', now),
+      urlEntry('/', 1.0, 'daily', now),
       // Static pages
-      urlEntry('#/collections', 0.9, 'daily', now),
-      urlEntry('#/calculator', 0.7, 'monthly'),
-      urlEntry('#/blog', 0.8, 'weekly', now),
-      urlEntry('#/partners', 0.7, 'monthly'),
-      urlEntry('#/visualizer', 0.8, 'monthly'),
-      urlEntry('#/brands', 0.7, 'monthly'),
-      urlEntry('#/projects', 0.7, 'monthly'),
-      urlEntry('#/booking', 0.8, 'monthly'),
+      urlEntry('/collections', 0.9, 'daily', now),
+      urlEntry('/calculator', 0.7, 'monthly'),
+      urlEntry('/blog', 0.8, 'weekly', now),
+      urlEntry('/partners', 0.7, 'monthly'),
+      // NOTE: visualizer/brands/projects/booking are same-page anchor
+      // sections on the homepage as of Phase 6 (not separate documents) —
+      // intentionally not listed here; a fragment URL offers a crawler
+      // nothing beyond what '/' already gives it.
 
       // Categories
       ...(categories || []).map(cat =>
-        urlEntry(`#/collections?category=${cat.slug}`, 0.85, 'weekly', now)
+        urlEntry(`/collections?category=${cat.slug}`, 0.85, 'weekly', now)
       ),
 
       // Product pages
       ...(products || []).map(p =>
         urlEntry(
-          `#/product/${p.slug}`,
+          `/product/${p.slug}`,
           0.9,
           'weekly',
           p.updated_at ? new Date(p.updated_at as string).toISOString().split('T')[0] : now
@@ -88,7 +90,7 @@ serve(async (_req: Request) => {
       // Blog articles
       ...(blogs || []).map(b =>
         urlEntry(
-          `#/blog/read/${b.slug}`,
+          `/blog/read/${b.slug}`,
           0.7,
           'monthly',
           b.updated_at ? new Date(b.updated_at as string).toISOString().split('T')[0] : now

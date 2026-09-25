@@ -121,7 +121,7 @@ export default function AdminSidebar({ activeRoute, onNavigate, userEmail, pendi
           <div className="admin-nav-section-label">Quick Links</div>
           <button
             className="admin-nav-item"
-            onClick={() => { window.open('#/', '_blank'); }}
+            onClick={() => { window.open('/', '_blank'); }}
           >
             <span className="nav-icon"><Store size={15} /></span>
             View Live Site

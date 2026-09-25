@@ -45,6 +45,33 @@ import {
 import AdminApp from './admin/AdminApp';
 import './admin/admin.css';
 
+// Legacy hash-string "route keys" (e.g. '#/collections', '#/product/x') are
+// still what every component calls onNavigate(...) with — this translates
+// them to real paths/anchors so no call site elsewhere in the app needed to
+// change as part of the hash -> path routing migration. New code can also
+// just pass a real path directly ('/product/x') — passed through untouched.
+const ANCHOR_SECTIONS: Record<string, string> = {
+  '#/visualizer': 'visualizer',
+  '#/brands': 'brands',
+  '#/projects': 'projects',
+  '#/booking': 'booking',
+  '#/collections': 'collections', // scroll-preview section on home — NOT the full /collections page
+  '#/why-choose-us': 'why-choose-us',
+};
+
+function routeKeyToPath(routeKey: string): string {
+  if (!routeKey.startsWith('#/')) return routeKey; // already a real path/anchor
+  if (routeKey.startsWith('#/product/')) return `/product/${routeKey.replace('#/product/', '')}`;
+  if (routeKey.startsWith('#/category/')) return `/collections?category=${routeKey.replace('#/category/', '')}`;
+  if (routeKey === '#/collections/all') return '/collections';
+  if (routeKey === '#/partners') return '/partners';
+  if (routeKey === '#/calculator') return '/calculator';
+  if (routeKey === '#/blog') return '/blog';
+  if (routeKey.startsWith('#/blog/read/')) return `/blog/read/${routeKey.replace('#/blog/read/', '')}`;
+  if (routeKey in ANCHOR_SECTIONS) return `/#${ANCHOR_SECTIONS[routeKey]}`;
+  return '/'; // '#/' and anything unrecognized
+}
+
 export default function App() {
   useRealtimeSync();
   const { isDark, toggle: toggleDarkMode } = useDarkMode();
@@ -53,7 +80,7 @@ export default function App() {
   const [activeSection, setActiveSection] = useState<string>('home');
   const [selectedTileForVisualizer, setSelectedTileForVisualizer] = useState<TileProduct | null>(null);
 
-  const [currentHash, setCurrentHash] = useState<string>(() => window.location.hash || '#/');
+  const [currentPath, setCurrentPath] = useState<string>(() => window.location.pathname || '/');
   const [currentProductId, setCurrentProductId] = useState<string>('');
 
   // Admin-editable SEO overrides (seo_settings table) — fetched once
@@ -175,7 +202,7 @@ export default function App() {
 
   // Simulated sleek loader progress tracker
   useEffect(() => {
-    if (window.location.hash.startsWith('#/admin')) {
+    if (window.location.pathname.startsWith('/admin') || window.location.hash.startsWith('#/admin')) {
       setIsLoading(false);
       return;
     }
@@ -193,84 +220,79 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Hash-based routing controller
+  // Path-based routing controller (History API)
   useEffect(() => {
-    // This is a single-document SPA where every hash change pushes a new
+    // This is a single-document SPA where every navigation pushes a new
     // history entry. The browser's native scroll restoration replays a
-    // stored offset for previously-visited hash entries (e.g. re-visiting
-    // "#/"), which races with and overrides our own explicit scrollTo calls
+    // stored offset for previously-visited entries (e.g. re-visiting "/"),
+    // which races with and overrides our own explicit scrollTo calls
     // below. Scroll position is fully managed by this router instead.
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
     }
 
-    const handleHashChange = () => {
-      const hash = window.location.hash || '#/';
-      setCurrentHash(hash);
+    const handleRouteChange = () => {
+      const path = window.location.pathname || '/';
+      // Legacy "#/admin" links (old hash-based scheme) still route into
+      // the admin app — its own internal routing is untouched by this
+      // migration either way.
+      const isAdmin = path.startsWith('/admin') || window.location.hash.startsWith('#/admin');
+      setCurrentPath(path);
 
-      if (hash.startsWith('#/admin')) {
+      if (isAdmin) {
         setCurrentPage('admin');
-      } else if (hash.startsWith('#/product/')) {
-        const id = hash.replace('#/product/', '');
-        setCurrentProductId(id);
+      } else if (path.startsWith('/product/')) {
+        const idOrSlug = decodeURIComponent(path.replace('/product/', ''));
+        setCurrentProductId(idOrSlug);
         setCurrentPage('product-detail');
         window.scrollTo(0, 0);
-      } else if (hash === '#/partners') {
+      } else if (path === '/partners') {
         setCurrentPage('partners');
         window.scrollTo(0, 0);
-      } else if (hash === '#/calculator') {
+      } else if (path === '/calculator') {
         setCurrentPage('calculator');
         window.scrollTo(0, 0);
-      } else if (hash === '#/collections') {
-        setCurrentPage('home');
-        setTimeout(() => {
-          const el = document.getElementById('collections');
-          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 150);
-      } else if (hash === '#/collections/all') {
+      } else if (path === '/collections') {
         setCurrentPage('collections');
         window.scrollTo(0, 0);
       } else {
         setCurrentPage('home');
-        const sectionMapping: Record<string, string> = {
-          '#/visualizer': 'visualizer',
-          '#/brands': 'brands',
-          '#/projects': 'projects',
-          '#/booking': 'booking'
-        };
-        const sectionId = sectionMapping[hash];
-        if (sectionId) {
+        // Same-page sections on home use a real URL fragment (e.g. "/#brands"),
+        // which is the correct use of "#" once it's no longer doubling as the
+        // router — genuine anchors, not routes.
+        const anchor = window.location.hash.replace('#', '');
+        if (anchor) {
           setTimeout(() => {
-            const targetElement = document.getElementById(sectionId);
+            const targetElement = document.getElementById(anchor);
             if (targetElement) {
               targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
           }, 150);
         } else {
-          // Plain "#/" (or unrecognized hash) — land at the top of the
+          // Plain "/" (or unrecognized path) — land at the top of the
           // home page instead of wherever the previous page was scrolled to.
           window.scrollTo(0, 0);
         }
       }
     };
 
-    window.addEventListener('hashchange', handleHashChange);
-    handleHashChange();
+    window.addEventListener('popstate', handleRouteChange);
+    handleRouteChange();
 
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('popstate', handleRouteChange);
   }, []);
 
   // Dynamic SEO — Full Open Graph, Twitter Cards, JSON-LD via SEO library
   useEffect(() => {
     // Analytics page tracking
-    trackPageView(currentHash);
+    trackPageView(currentPath);
 
-    if (currentHash === '#/' || currentHash === '') {
+    if (currentPath === '/' || currentPath === '') {
       applySEO(withSEOOverride(SEO_CONFIGS.home(), 'home'));
-    } else if (currentHash === '#/collections' || currentHash === '#/collections/all') {
+    } else if (currentPath === '/collections') {
       applySEO(withSEOOverride(SEO_CONFIGS.collections(), 'collections'));
-    } else if (currentHash.startsWith('#/product/')) {
-      const idOrSlug = currentHash.replace('#/product/', '');
+    } else if (currentPath.startsWith('/product/')) {
+      const idOrSlug = decodeURIComponent(currentPath.replace('/product/', ''));
       getProductByIdOrSlug(idOrSlug).then(tile => {
         if (tile) {
           applySEO(SEO_CONFIGS.product({
@@ -290,14 +312,14 @@ export default function App() {
           trackProductView(tile.id, 'direct');
         }
       });
-    } else if (currentHash === '#/partners') {
+    } else if (currentPath === '/partners') {
       applySEO(withSEOOverride(SEO_CONFIGS.partners(), 'partners'));
-    } else if (currentHash === '#/calculator') {
+    } else if (currentPath === '/calculator') {
       applySEO(withSEOOverride(SEO_CONFIGS.calculator(), 'calculator'));
     } else {
       applySEO(withSEOOverride(SEO_CONFIGS.home(), 'home'));
     }
-  }, [currentHash, seoOverrides]);
+  }, [currentPath, seoOverrides]);
 
   // Section highlight tracker scrollspy
   useEffect(() => {
@@ -331,14 +353,28 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleNavigate = (hash: string) => {
-    window.location.hash = hash;
+  const handleNavigate = (routeKey: string) => {
+    const target = routeKeyToPath(routeKey);
+    const [path, anchor] = target.split('#');
+    const targetPath = path || '/';
+
+    if (targetPath === window.location.pathname && anchor) {
+      // Same page — just scroll, no navigation entry needed.
+      window.history.replaceState(null, '', `${targetPath}#${anchor}`);
+      const el = document.getElementById(anchor);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
+    window.history.pushState(null, '', target || '/');
+    window.dispatchEvent(new PopStateEvent('popstate'));
   };
 
   const handleOpenBooking = () => {
-    // Always scroll directly — hashchange won't fire if hash is already #/booking
+    // Always scroll directly — a popstate won't fire if we're already on "/".
     const isOnHome = currentPage === 'home';
-    window.location.hash = '#/booking';
+    window.history.pushState(null, '', '/#booking');
+    window.dispatchEvent(new PopStateEvent('popstate'));
     setTimeout(() => {
       document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, isOnHome ? 50 : 300);

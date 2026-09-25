@@ -204,7 +204,7 @@ export const SEO_CONFIGS = {
     title: 'Tile Collections — Italian Porcelain, Marble Slabs & Designer Surfaces',
     description:
       'Explore our luxury tile collections. Filter by brand, style, size, finish, and price category. From Statuario marble to artisanal Zellige.',
-    canonicalUrl: `${SITE_URL}/#/collections`,
+    canonicalUrl: `${SITE_URL}/collections`,
     type: 'website',
     schema: [
       {
@@ -212,11 +212,11 @@ export const SEO_CONFIGS = {
         '@type': 'CollectionPage',
         name: 'Tile Collections',
         description: 'Complete luxury tile and slab collection with advanced filters.',
-        url: `${SITE_URL}/#/collections`,
+        url: `${SITE_URL}/collections`,
       },
       buildBreadcrumbList([
         { name: 'Home', url: SITE_URL },
-        { name: 'Collections', url: `${SITE_URL}/#/collections` },
+        { name: 'Collections', url: `${SITE_URL}/collections` },
       ]),
     ],
   }),
@@ -234,16 +234,16 @@ export const SEO_CONFIGS = {
     id: string;
     category?: string;
   }): SEOConfig => {
-    const productUrl = `${SITE_URL}/#/product/${product.slug || product.id}`;
+    const productUrl = `${SITE_URL}/product/${product.slug || product.id}`;
     const categoryLabel = product.category ? CATEGORY_LABELS[product.category] : undefined;
     const breadcrumbCrumbs = [
       { name: 'Home', url: SITE_URL },
-      { name: 'Collections', url: `${SITE_URL}/#/collections` },
+      { name: 'Collections', url: `${SITE_URL}/collections` },
     ];
     if (categoryLabel) {
       breadcrumbCrumbs.push({
         name: categoryLabel,
-        url: `${SITE_URL}/#/collections?category=${product.category}`,
+        url: `${SITE_URL}/collections?category=${product.category}`,
       });
     }
     breadcrumbCrumbs.push({ name: product.name, url: productUrl });
@@ -286,7 +286,7 @@ export const SEO_CONFIGS = {
     title: 'Atelier Editorial — Interior Design Trends, Tile Guides & Material Science',
     description:
       'Read our expert guides on tile selection, material science, design trends, slip resistance ratings, and architectural surface care.',
-    canonicalUrl: `${SITE_URL}/#/blog`,
+    canonicalUrl: `${SITE_URL}/blog`,
     type: 'website',
     schema: [
       {
@@ -294,7 +294,7 @@ export const SEO_CONFIGS = {
         '@type': 'Blog',
         name: 'Atelier Editorial',
         description: 'Design insights, material guides, and architectural trends from The Tile Store.',
-        url: `${SITE_URL}/#/blog`,
+        url: `${SITE_URL}/blog`,
         publisher: {
           '@type': 'Organization',
           name: SITE_NAME,
@@ -303,7 +303,7 @@ export const SEO_CONFIGS = {
       },
       buildBreadcrumbList([
         { name: 'Home', url: SITE_URL },
-        { name: 'Atelier Editorial', url: `${SITE_URL}/#/blog` },
+        { name: 'Atelier Editorial', url: `${SITE_URL}/blog` },
       ]),
     ],
   }),
@@ -320,7 +320,7 @@ export const SEO_CONFIGS = {
     title: `${post.title} | Atelier Editorial — The Tile Store`,
     description: post.excerpt || post.title,
     image: post.coverImage || undefined,
-    canonicalUrl: `${SITE_URL}/#/blog/read/${post.slug}`,
+    canonicalUrl: `${SITE_URL}/blog/read/${post.slug}`,
     type: 'article',
     schema: [
       {
@@ -340,12 +340,12 @@ export const SEO_CONFIGS = {
         },
         datePublished: post.publishedAt || undefined,
         keywords: post.tags.join(', '),
-        url: `${SITE_URL}/#/blog/read/${post.slug}`,
+        url: `${SITE_URL}/blog/read/${post.slug}`,
       },
       buildBreadcrumbList([
         { name: 'Home', url: SITE_URL },
-        { name: 'Atelier Editorial', url: `${SITE_URL}/#/blog` },
-        { name: post.title, url: `${SITE_URL}/#/blog/read/${post.slug}` },
+        { name: 'Atelier Editorial', url: `${SITE_URL}/blog` },
+        { name: post.title, url: `${SITE_URL}/blog/read/${post.slug}` },
       ]),
     ],
   }),
@@ -354,7 +354,7 @@ export const SEO_CONFIGS = {
     title: 'B2B Trade Portal — Architect, Builder & Dealer Partnerships | The Tile Store',
     description:
       'Join the Atelier Trade Program. Access wholesale B2B pricing, CAD spec files, priority sample boxes, and dedicated account management.',
-    canonicalUrl: `${SITE_URL}/#/partners`,
+    canonicalUrl: `${SITE_URL}/partners`,
     type: 'website',
   }),
 
@@ -362,7 +362,7 @@ export const SEO_CONFIGS = {
     title: 'Tile Area Calculator — Accurate Quantity & Cost Estimator | The Tile Store',
     description:
       'Calculate the exact number of tile boxes and material cost for your project. Includes wastage factor, grout, adhesive estimation.',
-    canonicalUrl: `${SITE_URL}/#/calculator`,
+    canonicalUrl: `${SITE_URL}/calculator`,
     type: 'website',
     schema: {
       '@context': 'https://schema.org',
@@ -370,7 +370,7 @@ export const SEO_CONFIGS = {
       name: 'Tile Area Calculator',
       applicationCategory: 'UtilityApplication',
       description: 'Accurate tile quantity and cost calculator for architects and builders.',
-      url: `${SITE_URL}/#/calculator`,
+      url: `${SITE_URL}/calculator`,
     },
   }),
 };
